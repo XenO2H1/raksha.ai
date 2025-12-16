@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Raksha.ai | Ultimate Command Node</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- THEME CONFIG --- */
+        :root {
+            --primary: #f43f5e; /* Rose 500 */
+            --secondary: #06b6d4; /* Cyan 500 */
+            --bg-deep: #02000e;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-deep);
+            color: #e2e8f0; 
+            overflow-x: hidden;
+            cursor: default;
+        }
+        
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* --- ADVANCED VISUALS --- */
+        
+        /* 1. Aurora Background */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(6, 182, 212, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(244, 63, 94, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(76, 29, 149, 0.1) 0%, transparent 60%);
+            filter: blur(80px); z-index: -2;
+            animation: aurora-shift 20s ease-in-out infinite alternate;
+        }
+        @keyframes aurora-shift { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        /* 2. Starfield */
+        .starfield {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; perspective: 500px; overflow: hidden; pointer-events: none;
+        }
+        .star {
+            position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%;
+            animation: warp-speed linear infinite;
+        }
+        @keyframes warp-speed {
+            from { transform: translateZ(0) translateY(0); opacity: 1; }
+            to { transform: translateZ(400px) translateY(100px); opacity: 0; }
+        }
+
+        /* 3. Glass Panels & Cards */
+        .glass-panel {
+            background: rgba(13, 13, 25, 0.6);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .glass-panel:hover {
+            border-color: rgba(6, 182, 212, 0.3);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.15);
+        }
+
+        .glass-nav {
+            background: rgba(2, 0, 14, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* 4. Scanning Effects */
+        .scanline {
+            position: fixed; inset: 0; pointer-events: none; z-index: 50;
+            background: linear-gradient(to bottom, transparent 49%, rgba(6, 182, 212, 0.05) 50%, transparent 51%);
+            background-size: 100% 4px;
+        }
+        
+        .radar-sweep {
+            background: conic-gradient(from 0deg, transparent 0deg, transparent 270deg, rgba(6, 182, 212, 0.2) 360deg);
+            animation: spin 4s linear infinite;
+        }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* 5. Animations */
+        @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        .animate-ticker { animation: ticker 40s linear infinite; }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(244, 63, 94, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(244, 63, 94, 0.8); }
+        }
+        .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+
+        /* Shimmer Button Effect */
+        .shimmer { position: relative; overflow: hidden; }
+        .shimmer::after {
+            content: ''; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+            transform: skewX(-20deg) translateX(-150%);
+            animation: shimmer-anim 3s infinite;
+        }
+        @keyframes shimmer-anim {
+            0% { transform: skewX(-20deg) translateX(-150%); }
+            20% { transform: skewX(-20deg) translateX(150%); }
+            100% { transform: skewX(-20deg) translateX(150%); }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #02000e; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+    </style>
+</head>
+<body class="selection:bg-rose-500/30">
+
+    <!-- Background Layers -->
+    <div class="aurora-bg"></div>
+    <div class="fixed inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none z-0 mix-blend-overlay"></div>
+    <div class="scanline"></div>
+
+    <div id="root" class="relative z-10"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, memo, useCallback } = React;
+
+        // --- ICONS (Merged Set) ---
+        const Icons = {
+            Shield: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
+            Map: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>,
+            Phone: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+            Zap: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+            Lock: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+            Ghost: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 10h.01"/><path d="M15 10h.01"/><path d="M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></svg>,
+            Trash: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
+            Alert: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
+            Menu: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>,
+            X: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
+            Eye: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>,
+            Camera: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>,
+            PhoneOff: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/><line x1="23" x2="1" y1="1" y2="23"/></svg>,
+            Bot: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>,
+            Send: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
+            Siren: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/><path d="M21 12h1"/><path d="M18.5 4.5 20 3"/><path d="M2 12h1"/><path d="M4 3 5.5 4.5"/></svg>,
+            Heart: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>,
+            Scale: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>,
+            Battery: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>,
+            LogOut: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+            Loading: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.5 2v2M2 12h2M21 12h-2M4.5 2v2M12 21v-2M12 4v2M19.5 2v2M4.5 20v2M19.5 20v2"/><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20"/></svg>,
+            AlertTriangle: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>,
+            CheckCircle: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>,
+            Info: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="16" y2="12"/><line x1="12" x2="12.01" y1="8" y2="8"/></svg>,
+            ChevronRight: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
+            Users: (p) => <svg {...p} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        };
+
+        // --- PARTICLE EFFECT SYSTEM ---
+        const MouseTrail = memo(() => {
+            const canvasRef = useRef(null);
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let width = canvas.width = window.innerWidth;
+                let height = canvas.height = window.innerHeight;
+                let particles = [];
+                
+                const handleResize = () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; };
+                window.addEventListener('resize', handleResize);
+
+                window.addEventListener('mousemove', (e) => {
+                    for(let i=0; i<2; i++) {
+                        particles.push({
+                            x: e.clientX, y: e.clientY,
+                            size: Math.random() * 2 + 1,
+                            speedX: Math.random() * 2 - 1,
+                            speedY: Math.random() * 2 - 1,
+                            life: 1,
+                            color: Math.random() > 0.5 ? '#f43f5e' : '#06b6d4'
+                        });
+                    }
+                });
+
+                const animate = () => {
+                    ctx.clearRect(0, 0, width, height);
+                    for (let i = 0; i < particles.length; i++) {
+                        let p = particles[i];
+                        p.x += p.speedX; p.y += p.speedY; p.life -= 0.02; p.size *= 0.95;
+                        ctx.fillStyle = p.color; ctx.globalAlpha = p.life;
+                        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI*2); ctx.fill();
+                        if (p.life <= 0) { particles.splice(i, 1); i--; }
+                    }
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }, []);
+            return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-0" />;
+        });
+
+        // --- BOOT SEQUENCE ---
+        const BootSequence = ({ onComplete }) => {
+            const [logs, setLogs] = useState([]);
+            const [progress, setProgress] = useState(0);
+
+            useEffect(() => {
+                const systemLogs = [
+                    "INITIALIZING NEURAL CORE...",
+                    "LOADING GEOSPATIAL LAYERS...",
+                    "ENCRYPTING BIOMETRIC UPLINK...",
+                    "CONNECTING TO RAKSHA SATELLITE...",
+                    "SYSTEM OPTIMAL. WELCOME COMMANDER."
+                ];
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < systemLogs.length) {
+                        setLogs(prev => [...prev, systemLogs[i]]);
+                        setProgress(prev => prev + 20);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                        setTimeout(onComplete, 800);
+                    }
+                }, 600);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className="fixed inset-0 z-[100] bg-[#02000e] flex flex-col items-center justify-center font-mono">
+                    <div className="w-80 space-y-4">
+                        <div className="flex justify-between items-end border-b border-white/10 pb-2 mb-4">
+                            <span className="text-2xl font-black text-white tracking-widest">RAKSHA.OS</span>
+                            <span className="text-xs text-rose-500 font-bold animate-pulse">V5.2</span>
+                        </div>
+                        <div className="h-40 overflow-hidden space-y-2">
+                            {logs.map((log, i) => (
+                                <div key={i} className="text-[10px] text-cyan-400 flex gap-2">
+                                    <span>></span> {log}
+                                </div>
+                            ))}
+                        </div>
+                        <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                            <div className="h-full bg-gradient-to-r from-cyan-500 to-rose-500 transition-all duration-300" style={{width: `${progress}%`}}></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- AUTH SCREEN ---
+        const AuthScreen = ({ onLogin }) => {
+            const [email, setEmail] = useState('');
+            return (
+                <div className="flex items-center justify-center min-h-screen p-4 relative z-10">
+                    <div className="glass-panel p-10 rounded-[2rem] w-full max-w-md border border-white/10 text-center relative overflow-hidden">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/20 blur-[60px]"></div>
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/20 blur-[60px]"></div>
+                        
+                        <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-purple-600 rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-xl">
+                            <Icons.Shield className="w-10 h-10 text-white" />
+                        </div>
+                        <h2 className="text-3xl font-bold text-white mb-2">Identify Yourself</h2>
+                        <p className="text-slate-400 text-sm mb-8">Secure Access Portal</p>
+
+                        <div className="space-y-4">
+                            <input type="email" placeholder="Enter Access ID" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:border-cyan-500 outline-none transition-colors" />
+                            <input type="password" placeholder="Passcode" className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white text-sm focus:border-cyan-500 outline-none transition-colors" />
+                            <button onClick={() => onLogin('User')} className="w-full py-4 bg-gradient-to-r from-rose-600 to-purple-600 rounded-xl text-white font-bold text-sm tracking-wider hover:scale-[1.02] transition-transform shadow-lg shadow-rose-500/20">
+                                AUTHENTICATE
+                            </button>
+                            <div className="relative py-2">
+                                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-white/10"></div></div>
+                                <div className="relative flex justify-center text-xs uppercase"><span className="bg-[#0d0d1a] px-2 text-slate-500">Or</span></div>
+                            </div>
+                            <button onClick={() => onLogin('Demo Commander')} className="w-full py-3 border border-cyan-500/30 text-cyan-400 rounded-xl text-xs font-bold hover:bg-cyan-500/10 transition-colors uppercase tracking-widest">
+                                Enter Demo Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- HUD ---
+        const StatusHUD = memo(({ user }) => {
+            const [battery, setBattery] = useState(85);
+            const [time, setTime] = useState(new Date().toLocaleTimeString());
+
+            useEffect(() => {
+                const timer = setInterval(() => setTime(new Date().toLocaleTimeString()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            return (
+                <div className="hidden lg:flex fixed top-6 right-8 gap-6 z-40 font-mono text-[10px] tracking-[0.2em] text-cyan-200/70 glass-panel px-8 py-3 rounded-full uppercase transition-all hover:bg-white/5 border border-cyan-500/20 hover:border-cyan-400/50 hover:shadow-[0_0_20px_rgba(6,182,212,0.15)]">
+                    <div className="flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]"></span>
+                        <span className="text-emerald-400 font-bold">{user ? 'ONLINE' : 'OFFLINE'}</span>
+                    </div>
+                    {user && (
+                        <>
+                            <div className="w-px h-3 bg-white/10"></div>
+                             <div className="flex items-center gap-2">
+                                <Icons.Users className="w-3 h-3 text-cyan-400" />
+                                <span className="max-w-[100px] truncate">{user.includes('@') ? user.split('@')[0] : user}</span>
+                            </div>
+                        </>
+                    )}
+                    <div className="w-px h-3 bg-white/10"></div>
+                    <div className="flex items-center gap-2">
+                        <Icons.Battery className="w-3 h-3 text-cyan-400" />
+                        <span>{battery}%</span>
+                    </div>
+                    <div className="w-px h-3 bg-white/10"></div>
+                    <span className="text-white font-bold">{time}</span>
+                </div>
+            );
+        });
+
+        // --- SOS MODULE ---
+        const SOSModule = () => {
+            const [status, setStatus] = useState('idle');
+            const [countdown, setCountdown] = useState(3);
+
+            const activate = () => {
+                if(status !== 'idle') return;
+                setStatus('counting');
+                let c = 3;
+                const timer = setInterval(() => {
+                    c--;
+                    setCountdown(c);
+                    if(c === 0) {
+                        clearInterval(timer);
+                        setStatus('active');
+                    }
+                }, 1000);
+            };
+
+            const reset = () => {
+                setStatus('idle');
+                setCountdown(3);
+            };
+
+            return (
+                <div className="glass-panel p-8 rounded-[2.5rem] relative overflow-hidden flex flex-col items-center justify-center min-h-[450px] border border-white/10 group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent pointer-events-none"></div>
+                    
+                    <div className={`absolute w-[500px] h-[500px] border border-white/5 rounded-full transition-all duration-1000 ${status === 'active' ? 'scale-150 border-rose-500/30 animate-pulse' : 'scale-100'}`}></div>
+                    <div className={`absolute w-[350px] h-[350px] border border-white/10 rounded-full transition-all duration-1000 ${status === 'active' ? 'scale-125 border-rose-500/50 animate-pulse' : 'scale-100'}`}></div>
+
+                    <button 
+                        onClick={activate}
+                        disabled={status !== 'idle'}
+                        className={`relative z-20 w-56 h-56 rounded-full flex flex-col items-center justify-center transition-all duration-500 shadow-2xl ${status === 'active' ? 'bg-emerald-600 shadow-[0_0_80px_rgba(16,185,129,0.5)]' : 'bg-gradient-to-br from-rose-600 to-rose-900 hover:scale-105 hover:shadow-[0_0_60px_rgba(244,63,94,0.4)]'}`}
+                    >
+                        {status === 'counting' ? (
+                            <span className="text-8xl font-black text-white font-mono animate-ping">{countdown}</span>
+                        ) : status === 'active' ? (
+                            <div className="flex flex-col items-center animate-fade-in">
+                                <Icons.Shield className="w-16 h-16 text-white mb-2" />
+                                <span className="text-2xl font-black text-white uppercase tracking-widest">SENT</span>
+                            </div>
+                        ) : (
+                            <>
+                                <Icons.Zap className="w-16 h-16 text-white mb-2" />
+                                <span className="text-4xl font-black text-white tracking-tighter">SOS</span>
+                                <span className="text-[10px] text-white/70 uppercase tracking-[0.3em] mt-2">Instant Trigger</span>
+                            </>
+                        )}
+                    </button>
+
+                    {status === 'active' && (
+                        <button onClick={reset} className="absolute bottom-8 px-6 py-2 bg-black/40 border border-white/20 rounded-full text-xs text-white hover:bg-white/10 transition-colors uppercase tracking-widest z-30">
+                            Reset System
+                        </button>
+                    )}
+                </div>
+            );
+        };
+
+        // --- MAP MODULE ---
+        const MapModule = () => {
+            const [satellite, setSatellite] = useState(false);
+            const [layers, setLayers] = useState({ heatmap: true, cctv: false, police: true });
+            
+            const toggleLayer = (l) => setLayers(p => ({...p, [l]: !p[l]}));
+
+            return (
+                <div className="glass-panel rounded-[2.5rem] overflow-hidden relative h-[600px] border border-white/10 shadow-2xl flex flex-col md:flex-row">
+                    <div className="md:w-72 bg-[#0a0a14]/90 p-6 border-r border-white/5 flex flex-col gap-6 z-20 backdrop-blur-md">
+                        <div>
+                            <h3 className="text-white font-bold text-lg flex items-center gap-2"><Icons.Map className="w-5 h-5 text-cyan-400"/> Intel Map</h3>
+                            <p className="text-xs text-slate-500 mt-1">Live Global Threat Analysis</p>
+                        </div>
+                        
+                        <div className="space-y-3">
+                            <button onClick={() => setSatellite(!satellite)} className={`w-full p-3 rounded-xl border flex items-center gap-3 text-xs font-bold transition-all ${satellite ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-white/5 border-white/5 text-slate-400'}`}>
+                                <div className={`w-2 h-2 rounded-full ${satellite ? 'bg-cyan-400' : 'bg-slate-600'}`}></div> Satellite Feed
+                            </button>
+                            {['heatmap', 'cctv', 'police'].map(layer => (
+                                <button key={layer} onClick={() => toggleLayer(layer)} className={`w-full p-3 rounded-xl border flex items-center gap-3 text-xs font-bold uppercase transition-all ${layers[layer] ? 'bg-indigo-500/20 border-indigo-500 text-indigo-300' : 'bg-white/5 border-white/5 text-slate-400'}`}>
+                                    <div className={`w-2 h-2 rounded-full ${layers[layer] ? 'bg-indigo-400' : 'bg-slate-600'}`}></div> {layer}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="mt-auto p-4 rounded-xl bg-gradient-to-br from-rose-500/10 to-transparent border border-rose-500/20">
+                            <div className="text-[10px] text-rose-400 font-bold uppercase mb-1">Current Sector Risk</div>
+                            <div className="text-2xl font-bold text-white">MODERATE</div>
+                            <div className="text-[10px] text-slate-400 mt-1 font-mono">Lighting: 45% | Patrols: Low</div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 relative bg-[#050510] overflow-hidden">
+                        {satellite ? (
+                            <div className="absolute inset-0 bg-[url('https://mt1.google.com/vt/lyrs=s&x=1&y=1&z=1')] bg-cover opacity-60 grayscale brightness-75"></div>
+                        ) : (
+                            <div className="absolute inset-0">
+                                <div className="absolute inset-0 opacity-20" style={{backgroundImage: 'linear-gradient(#334155 1px, transparent 1px), linear-gradient(90deg, #334155 1px, transparent 1px)', backgroundSize: '40px 40px'}}></div>
+                                <div className="absolute inset-0 radar-sweep opacity-30"></div>
+                            </div>
+                        )}
+
+                        <div className="absolute inset-0 w-full h-full pointer-events-none">
+                            <svg className="absolute inset-0 w-full h-full">
+                                <path d="M 200 500 Q 400 300 600 400" stroke="#06b6d4" strokeWidth="3" fill="none" strokeDasharray="5,5" className="opacity-70" />
+                            </svg>
+                            <div className="absolute top-[400px] left-[600px] -translate-x-1/2 -translate-y-1/2">
+                                <div className="w-4 h-4 bg-white rounded-full shadow-[0_0_20px_white]"></div>
+                                <div className="absolute inset-0 w-4 h-4 bg-cyan-400 rounded-full animate-ping opacity-75"></div>
+                            </div>
+                            <div className="absolute top-[350px] left-[400px] animate-float">
+                                <div className="bg-black/60 backdrop-blur border border-cyan-500/50 px-2 py-1 rounded text-[10px] text-cyan-400 font-mono mb-2">DRONE-X1</div>
+                                <div className="w-12 h-12 border border-cyan-500/30 rounded-full flex items-center justify-center animate-spin">
+                                    <div className="w-1 h-1 bg-cyan-400 rounded-full"></div>
+                                </div>
+                            </div>
+                            {layers.heatmap && <div className="absolute top-[200px] left-[300px] w-64 h-64 bg-rose-500/20 rounded-full blur-[80px]"></div>}
+                            {layers.police && (
+                                <div className="absolute top-[150px] right-[100px] pointer-events-auto cursor-pointer group">
+                                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center shadow-lg shadow-blue-600/40">
+                                        <Icons.Shield className="w-5 h-5 text-white"/>
+                                    </div>
+                                    <div className="absolute top-full mt-2 bg-black px-2 py-1 rounded text-[10px] text-white opacity-0 group-hover:opacity-100 transition-opacity">HQ Station</div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- FAKE CALL ---
+        const FakeCall = ({ onClose }) => {
+            const [state, setState] = useState('incoming');
+
+            useEffect(() => {
+                if(state === 'active') {
+                    const utterance = new SpeechSynthesisUtterance("Hello? Where are you? I'm waiting outside.");
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    window.speechSynthesis.cancel();
+                }
+                return () => window.speechSynthesis.cancel();
+            }, [state]);
+
+            return (
+                <div className="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-between py-20 text-white animate-fade-in">
+                    {state === 'incoming' ? (
+                        <>
+                            <div className="text-center mt-10">
+                                <div className="w-32 h-32 bg-gray-200 rounded-full mx-auto mb-6 flex items-center justify-center overflow-hidden">
+                                    <Icons.Ghost className="w-16 h-16 text-gray-400"/>
+                                </div>
+                                <h2 className="text-4xl font-light">Mom</h2>
+                                <p className="text-lg opacity-60 mt-2">Mobile</p>
+                            </div>
+                            <div className="w-full max-w-sm px-8 flex justify-between">
+                                <button onClick={onClose} className="flex flex-col items-center gap-2">
+                                    <div className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center animate-bounce"><Icons.PhoneOff className="w-8 h-8"/></div>
+                                    <span className="text-sm">Decline</span>
+                                </button>
+                                <button onClick={() => setState('active')} className="flex flex-col items-center gap-2">
+                                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce delay-100"><Icons.Phone className="w-8 h-8"/></div>
+                                    <span className="text-sm">Accept</span>
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center mt-20">
+                            <h2 className="text-3xl font-bold">Mom</h2>
+                            <p className="text-emerald-400 mt-2 font-mono">00:14</p>
+                            <div className="mt-96">
+                                <button onClick={onClose} className="w-20 h-20 bg-rose-500 rounded-full flex items-center justify-center mx-auto shadow-lg"><Icons.PhoneOff className="w-8 h-8"/></button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // --- CHAT INTERFACE ---
+        const ChatInterface = () => {
+            const [messages, setMessages] = useState([
+                { id: 1, sender: 'bot', text: 'Legal AI Online. I can assist with FIR filing, rights information, and connecting to nearest station.' }
+            ]);
+            const [input, setInput] = useState('');
+
+            const send = () => {
+                if(!input) return;
+                setMessages([...messages, { id: Date.now(), sender: 'user', text: input }]);
+                setInput('');
+                setTimeout(() => setMessages(prev => [...prev, { id: Date.now()+1, sender: 'bot', text: 'I understand. According to Article 21, you have the right to protection. Connecting you to a legal aid volunteer...' }]), 1000);
+            };
+
+            return (
+                <div className="glass-panel rounded-[2.5rem] flex flex-col h-full overflow-hidden border border-white/10 shadow-2xl">
+                    <div className="p-6 border-b border-white/5 bg-black/20 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400"><Icons.Bot className="w-5 h-5"/></div>
+                        <div>
+                            <h3 className="font-bold text-white">Legal Assistant</h3>
+                            <p className="text-xs text-emerald-400">Online • Encrypted</p>
+                        </div>
+                    </div>
+                    <div className="flex-1 p-6 overflow-y-auto space-y-4">
+                        {messages.map(m => (
+                            <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${m.sender === 'user' ? 'bg-cyan-600 text-white rounded-tr-sm' : 'bg-white/10 text-slate-200 rounded-tl-sm'}`}>
+                                    {m.text}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="p-4 bg-black/40 border-t border-white/5 flex gap-3">
+                        <input value={input} onChange={e=>setInput(e.target.value)} placeholder="Type your legal query..." className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-cyan-500 outline-none" />
+                        <button onClick={send} className="p-3 bg-cyan-600 rounded-xl text-white hover:bg-cyan-500"><Icons.Send className="w-5 h-5"/></button>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- PRIVACY & SECURITY PAGE ---
+        const SecurityPage = () => {
+            const [autoDelete, setAutoDelete] = useState(false);
+            const [ghostMode, setGhostMode] = useState(true);
+            const [biometric, setBiometric] = useState(false);
+
+            return (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 h-full animate-fade-in">
+                    <div className="glass-panel p-10 rounded-[3rem] border border-white/10 relative overflow-hidden flex flex-col justify-center">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]"></div>
+                        <div className="relative z-10">
+                            <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-8 shadow-2xl">
+                                <Icons.Lock className="w-10 h-10 text-white" />
+                            </div>
+                            <h2 className="text-4xl font-black text-white mb-4">Privacy Shield</h2>
+                            <p className="text-slate-400 leading-relaxed mb-8">
+                                Manage your digital footprint. All location data is end-to-end encrypted and stored locally until an emergency trigger event.
+                            </p>
+                            <button className="w-full py-4 border border-rose-500/30 bg-rose-500/5 text-rose-400 rounded-xl text-sm font-bold hover:bg-rose-500/10 transition-colors flex items-center justify-center gap-3">
+                                <Icons.Trash className="w-4 h-4"/> EMERGENCY DATA WIPE
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Auto-Shred */}
+                        <div className="glass-panel p-8 rounded-[2rem] border border-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">Auto-Shred History</h3>
+                                <p className="text-xs text-slate-400">Delete logs after 24 hours</p>
+                            </div>
+                            <button onClick={() => setAutoDelete(!autoDelete)} className={`w-14 h-8 rounded-full p-1 transition-colors ${autoDelete ? 'bg-emerald-500' : 'bg-slate-700'}`}>
+                                <div className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${autoDelete ? 'translate-x-6' : ''}`}></div>
+                            </button>
+                        </div>
+
+                        {/* Ghost Mode */}
+                        <div className="glass-panel p-8 rounded-[2rem] border border-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">Ghost Mode</h3>
+                                <p className="text-xs text-slate-400">Invisible to non-emergency contacts</p>
+                            </div>
+                            <button onClick={() => setGhostMode(!ghostMode)} className={`w-14 h-8 rounded-full p-1 transition-colors ${ghostMode ? 'bg-purple-500' : 'bg-slate-700'}`}>
+                                <div className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${ghostMode ? 'translate-x-6' : ''}`}></div>
+                            </button>
+                        </div>
+
+                        {/* Biometric */}
+                        <div className="glass-panel p-8 rounded-[2rem] border border-white/5 flex items-center justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-1">Biometric Lock</h3>
+                                <p className="text-xs text-slate-400">Require FaceID for app entry</p>
+                            </div>
+                            <button onClick={() => setBiometric(!biometric)} className={`w-14 h-8 rounded-full p-1 transition-colors ${biometric ? 'bg-cyan-500' : 'bg-slate-700'}`}>
+                                <div className={`w-6 h-6 bg-white rounded-full shadow-md transition-transform ${biometric ? 'translate-x-6' : ''}`}></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // --- MAIN APPLICATION ---
+        const App = () => {
+            const [user, setUser] = useState(null);
+            const [booted, setBooted] = useState(false);
+            const [view, setView] = useState('dashboard'); // dashboard, map, legal, security
+            const [fakeCall, setFakeCall] = useState(false);
+
+            if (!booted) return <BootSequence onComplete={() => setBooted(true)} />;
+            if (!user) return <AuthScreen onLogin={setUser} />;
+
+            return (
+                <div className="min-h-screen relative pb-20">
+                    <MouseTrail />
+                    <div className="starfield">
+                        {[...Array(50)].map((_, i) => (
+                            <div key={i} className="star" style={{
+                                top: Math.random()*100+'%', 
+                                left: Math.random()*100+'%', 
+                                animationDelay: Math.random()*5+'s'
+                            }}></div>
+                        ))}
+                    </div>
+
+                    {/* Navbar */}
+                    <nav className="glass-nav sticky top-0 z-40 px-6 h-24 flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-tr from-rose-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                                <Icons.Shield className="w-6 h-6 text-white"/>
+                            </div>
+                            <span className="text-xl font-black tracking-tight text-white">RAKSHA<span className="text-rose-500">.AI</span></span>
+                        </div>
+                        
+                        <div className="hidden md:flex items-center gap-2 bg-white/5 p-1.5 rounded-full border border-white/5">
+                            {[
+                                { id: 'dashboard', label: 'Command' },
+                                { id: 'map', label: 'Intel Map' },
+                                { id: 'legal', label: 'Legal Aid' },
+                                { id: 'security', label: 'Security' }
+                            ].map(tab => (
+                                <button 
+                                    key={tab.id} 
+                                    onClick={() => setView(tab.id)}
+                                    className={`px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all ${view === tab.id ? 'bg-white/10 text-white shadow-inner' : 'text-slate-400 hover:text-white'}`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <div className="text-right hidden sm:block">
+                                <div className="text-[10px] text-slate-400 font-mono uppercase tracking-wider">Status</div>
+                                <div className="text-xs text-emerald-400 font-bold flex items-center justify-end gap-1"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span> ONLINE</div>
+                            </div>
+                            <div className="w-10 h-10 bg-slate-800 rounded-full border border-white/10 flex items-center justify-center text-white font-bold">
+                                {user.charAt(0)}
+                            </div>
+                        </div>
+                    </nav>
+
+                    {/* Content */}
+                    <main className="max-w-7xl mx-auto px-6 py-8 animate-fade-in min-h-[calc(100vh-160px)]">
+                        
+                        {fakeCall && <FakeCall onClose={() => setFakeCall(false)} />}
+
+                        {/* DASHBOARD VIEW */}
+                        {view === 'dashboard' && (
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 h-full">
+                                <div className="lg:col-span-2">
+                                    <SOSModule />
+                                </div>
+                                <div className="space-y-6">
+                                    <div className="glass-panel p-8 rounded-[2.5rem] border border-white/10 h-full flex flex-col justify-center items-center text-center">
+                                        <div className="w-20 h-20 bg-gradient-to-br from-rose-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-xl animate-float">
+                                            <Icons.Ghost className="w-10 h-10 text-white" />
+                                        </div>
+                                        <h3 className="text-2xl font-bold text-white">Stealth Mode</h3>
+                                        <p className="text-sm text-slate-400 mt-2 mb-6">Activate fake call interface to deter threats.</p>
+                                        <button onClick={() => setFakeCall(true)} className="px-8 py-3 bg-white/10 border border-white/20 rounded-xl text-white font-bold hover:bg-white/20 transition-colors">
+                                            TRIGGER FAKE CALL
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* MAP VIEW */}
+                        {view === 'map' && <MapModule />}
+
+                        {/* LEGAL VIEW (New Tab) */}
+                        {view === 'legal' && (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 h-[600px]">
+                                <div className="space-y-6 h-full flex flex-col">
+                                    <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-rose-500 relative overflow-hidden group hover:bg-white/5 transition-colors shadow-2xl flex-1 flex flex-col justify-between">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/10 rounded-full blur-[80px]"></div>
+                                        <div className="relative z-10">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div>
+                                                    <h3 className="text-3xl font-bold text-white tracking-tight">Emergency Dispatch</h3>
+                                                    <p className="text-slate-400 text-xs mt-2 font-mono tracking-widest uppercase">Priority Line: 100</p>
+                                                </div>
+                                                <div className="p-4 bg-rose-500/20 rounded-2xl"><Icons.Siren className="w-8 h-8 text-rose-500" /></div>
+                                            </div>
+                                            <button className="shimmer w-full bg-gradient-to-r from-rose-600 to-rose-800 hover:from-rose-500 hover:to-rose-700 text-white py-6 rounded-2xl font-black text-lg shadow-[0_0_50px_rgba(225,29,72,0.4)] flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95">
+                                                <Icons.Phone className="w-6 h-6 animate-pulse" /> CALL POLICE
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div className="glass-panel p-8 rounded-[2.5rem] border-l-8 border-purple-500 relative overflow-hidden group hover:bg-white/5 transition-colors shadow-2xl flex-1 flex flex-col justify-between">
+                                        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]"></div>
+                                        <div className="relative z-10">
+                                            <div className="flex justify-between items-start mb-6">
+                                                <div>
+                                                    <h3 className="text-3xl font-bold text-white tracking-tight">Women's Helpline</h3>
+                                                    <p className="text-slate-400 text-xs mt-2 font-mono tracking-widest uppercase">Support: 1091</p>
+                                                </div>
+                                                <div className="p-4 bg-purple-500/20 rounded-2xl"><Icons.Heart className="w-8 h-8 text-purple-500" /></div>
+                                            </div>
+                                            <button className="shimmer w-full bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white py-6 rounded-2xl font-black text-lg shadow-[0_0_50px_rgba(147,51,234,0.4)] flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95">
+                                                <Icons.Phone className="w-6 h-6" /> CALL SUPPORT
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="h-full">
+                                    <ChatInterface />
+                                </div>
+                            </div>
+                        )}
+
+                        {/* SECURITY VIEW (New Tab) */}
+                        {view === 'security' && <SecurityPage />}
+
+                    </main>
+
+                    {/* Bottom Ticker */}
+                    <div className="fixed bottom-0 w-full bg-[#02000e]/90 backdrop-blur border-t border-white/5 py-2 overflow-hidden z-30">
+                        <div className="animate-ticker whitespace-nowrap flex gap-12 text-[10px] font-mono text-cyan-500/70 tracking-widest uppercase">
+                            <span>System Normal</span>
+                            <span>Encryption: AES-256</span>
+                            <span>Network: Starlink-V2</span>
+                            <span>Threat Level: Low</span>
+                            <span>Biometrics: Verified</span>
+                            <span>Zone: Sector 7 [Safe]</span>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
