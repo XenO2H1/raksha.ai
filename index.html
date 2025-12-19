@@ -21,7 +21,7 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind Config for Custom Colors/Animations -->
+    <!-- Tailwind Config -->
     <script>
         tailwind.config = {
             theme: {
@@ -55,14 +55,13 @@
             overflow-y: auto;
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
-            /* Prevent pull-to-refresh on mobile */
             overscroll-behavior-y: none;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        /* SCROLLBAR */
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #02000f; }
-        ::-webkit-scrollbar-thumb { background: rgba(244, 63, 94, 0.3); border-radius: 10px; }
+        /* SCROLLBAR HIDING FOR MOBILE FEEL */
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; }
 
         /* GLASSMORPHISM */
         .glass-panel {
@@ -81,7 +80,7 @@
             box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
         }
 
-        /* ANIMATIONS & EFFECTS */
+        /* ANIMATIONS */
         .text-flow {
             background: linear-gradient(to right, #fff 20%, #f43f5e 30%, #d946ef 50%, #f43f5e 70%, #fff 80%);
             background-size: 200% auto;
@@ -92,7 +91,7 @@
         @keyframes textFlow { to { background-position: 200% center; } }
 
         .scanline {
-            position: fixed; inset: 0; pointer-events: none; z-index: 50;
+            position: fixed; inset: 0; pointer-events: none; z-index: 5;
             background: linear-gradient(to bottom, transparent 0%, rgba(244, 63, 94, 0.02) 50%, transparent 100%);
             background-size: 100% 4px;
             animation: scanline 8s linear infinite;
@@ -109,7 +108,7 @@
 
         .strobe-overlay {
             animation: strobe-flash 0.15s infinite;
-            position: fixed; inset: 0; z-index: 60; pointer-events: none;
+            position: fixed; inset: 0; z-index: 100; pointer-events: none;
             background-color: rgba(255, 0, 0, 0.0);
         }
         @keyframes strobe-flash {
@@ -119,6 +118,8 @@
 
         .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .pb-safe { padding-bottom: calc(1rem + env(safe-area-inset-bottom)); }
     </style>
 </head>
 <body>
@@ -133,11 +134,8 @@
             const [loading, setLoading] = useState(true);
 
             useEffect(() => {
-                // Check local storage for persisted session
                 const storedUser = localStorage.getItem('raksha_user');
-                if (storedUser) {
-                    setUser(JSON.parse(storedUser));
-                }
+                if (storedUser) setUser(JSON.parse(storedUser));
                 setLoading(false);
             }, []);
 
@@ -152,7 +150,7 @@
                     localStorage.setItem('raksha_user', JSON.stringify(mockUser));
                     setUser(mockUser);
                     setLoading(false);
-                }, 1500); // Simulate network delay
+                }, 1000);
             };
 
             const logout = () => {
@@ -163,7 +161,7 @@
             return { user, loading, login, logout };
         }
 
-        // --- ICONS (Inline SVGs) ---
+        // --- EXTENDED ICONS LIBRARY ---
         const Icons = {
             Shield: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
             Siren: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2"/><path d="M21 12h1"/><path d="M18.5 4.5 20 3"/><path d="M2 12h1"/><path d="M4 3 5.5 4.5"/></svg>,
@@ -180,11 +178,29 @@
             ChevronRight: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
             AlertTriangle: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>,
             Loading: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>,
-            Volume2: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
-            VolumeX: (props) => <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" x2="17" y1="9" y2="15"/><line x1="17" x2="23" y1="9" y2="15"/></svg>,
+            Volume2: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>,
+            VolumeX: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" x2="17" y1="9" y2="15"/><line x1="17" x2="23" y1="9" y2="15"/></svg>,
+            Mic: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/><line x1="8" x2="16" y1="22" y2="22"/></svg>,
+            Navigation: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>,
+            Scale: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>,
+            Lock: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>,
+            ShieldAlert: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>,
+            Database: (props) => <svg {...props} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s 9-1.34 9-3V5"/></svg>,
         };
 
-        // --- BACKGROUND COMPONENT ---
+        // --- CONSTANTS ---
+        const FEATURES = [
+            { id: 1, title: "SOS Emergency", Icon: Icons.Siren, desc: "One-tap SOS, Shake-to-Alert, and 'Help Me' voice trigger.", color: "text-rose-500", bg: "bg-rose-500/10" },
+            { id: 2, title: "Auto Evidence", Icon: Icons.Mic, desc: "Auto-records 30s audio on SOS trigger. Secure cloud upload.", color: "text-blue-400", bg: "bg-blue-400/10" }, 
+            { id: 4, title: "Safe Zone Map", Icon: Icons.Map, desc: "Crowdsourced heatmaps. Green for safe, Red for unsafe areas.", color: "text-emerald-400", bg: "bg-emerald-400/10" },
+            { id: 5, title: "Trusted Circle", Icon: Icons.Users, desc: "Live 'Walk With Me' tracking & auto-arrival alerts.", color: "text-pink-400", bg: "bg-pink-400/10" },
+            { id: 6, title: "Stealth Tools", Icon: Icons.Ghost, desc: "Fake Call generator & Calculator disguise icon.", color: "text-gray-400", bg: "bg-gray-400/10" },
+            { id: 7, title: "Travel Safety", Icon: Icons.Navigation, desc: "Route deviation detection & cab warnings.", color: "text-orange-400", bg: "bg-orange-400/10" },
+            { id: 9, title: "Legal & Police", Icon: Icons.Scale, desc: "One-tap helpline (112) & Legal AI chatbot.", color: "text-yellow-400", bg: "bg-yellow-400/10" },
+            { id: 10, title: "Profile Security", Icon: Icons.Lock, desc: "Low-Battery Emergency Mode & Secure Pin.", color: "text-cyan-400", bg: "bg-cyan-400/10" },
+        ];
+
+        // --- COMPONENTS ---
         const CyberBackground = memo(() => (
             <div className="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-[#02000f]">
                 <div className="absolute top-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-rose-600/10 rounded-full blur-[80px] animate-breath"></div>
@@ -194,7 +210,16 @@
             </div>
         ));
 
-        // --- INTRO SCREEN ---
+        const FeatureCard = memo(({ feature }) => (
+            <div className="glass-card p-6 rounded-[1.5rem] group h-full flex flex-col transition-all duration-300 active:scale-95 border border-white/10 hover:border-rose-500/30">
+                <div className={`mb-4 p-3 rounded-2xl w-fit transition-transform duration-300 group-hover:scale-110 ${feature.bg} ${feature.color} relative z-10 shadow-lg`}>
+                    <feature.Icon className="w-6 h-6" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2 relative z-10 tracking-tight group-hover:text-rose-300 transition-colors">{feature.title}</h3>
+                <p className="text-slate-400 text-xs leading-relaxed relative z-10 font-medium group-hover:text-slate-300">{feature.desc}</p>
+            </div>
+        ));
+
         const IntroPage = ({ onEnter }) => {
             const [stats, setStats] = useState(0);
             useEffect(() => {
@@ -219,20 +244,6 @@
                                 AI-driven personal safety network. Don't be a statistic. Be a guardian.
                             </p>
                         </div>
-
-                        <div className="glass-card p-6 rounded-3xl border border-white/10">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Active Threats Prevented</span>
-                                <Icons.Shield className="w-5 h-5 text-emerald-400" />
-                            </div>
-                            <div className="text-4xl font-mono font-bold text-white tabular-nums">
-                                {stats.toLocaleString()}
-                            </div>
-                            <div className="mt-4 h-1 w-full bg-white/10 rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-rose-500 to-purple-500 w-[85%] animate-pulse"></div>
-                            </div>
-                        </div>
-
                         <button onClick={onEnter} className="group relative w-full py-5 bg-white text-black rounded-2xl font-black text-lg uppercase tracking-widest hover:scale-[1.02] active:scale-95 transition-all shadow-[0_0_40px_rgba(255,255,255,0.3)]">
                             Initialize System
                         </button>
@@ -241,15 +252,12 @@
             );
         };
 
-        // --- AUTH SCREEN (DEMO MODE ENABLED) ---
         const AuthScreen = ({ onLogin, loading }) => {
             const [email, setEmail] = useState('');
-            
             return (
                 <div className="min-h-screen flex items-center justify-center p-6 animate-fade-in relative z-20">
                     <div className="glass-card w-full max-w-sm p-8 rounded-[2.5rem] border border-white/10 shadow-2xl relative overflow-hidden">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-500 via-purple-500 to-rose-500 animate-ticker"></div>
-                        
                         <div className="text-center mb-8">
                             <div className="w-20 h-20 bg-gradient-to-br from-rose-600 to-purple-700 rounded-2xl mx-auto flex items-center justify-center shadow-lg mb-6">
                                 <Icons.Shield className="w-10 h-10 text-white" />
@@ -257,201 +265,103 @@
                             <h2 className="text-2xl font-bold text-white mb-2">Identify Yourself</h2>
                             <p className="text-slate-400 text-sm">Secure Neural Link Access</p>
                         </div>
-
                         <form onSubmit={(e) => { e.preventDefault(); onLogin(email); }} className="space-y-4">
-                            <input 
-                                type="email" 
-                                placeholder="Enter Access ID (Email)" 
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
+                            <input type="email" placeholder="Enter Access ID (Email)" className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" value={email} onChange={(e) => setEmail(e.target.value)} />
                             <button disabled={loading} className="w-full py-4 bg-gradient-to-r from-rose-600 to-purple-600 rounded-xl font-bold text-white uppercase tracking-wider text-sm hover:opacity-90 active:scale-95 transition-all flex items-center justify-center gap-2">
                                 {loading ? <Icons.Loading className="w-5 h-5 animate-spin"/> : 'Authenticate'}
                             </button>
                         </form>
-
                         <div className="mt-6 pt-6 border-t border-white/5 text-center">
-                            <button onClick={() => onLogin('demo@raksha.ai')} className="text-rose-400 text-xs font-mono uppercase tracking-widest hover:text-white transition-colors">
-                                Initiating Demo Protocol...
-                            </button>
+                            <button onClick={() => onLogin('demo@raksha.ai')} className="text-rose-400 text-xs font-mono uppercase tracking-widest hover:text-white transition-colors">Initiating Demo Protocol...</button>
                         </div>
                     </div>
                 </div>
             );
         };
 
-        // --- FEATURES COMPONENTS ---
-
         const SOSButton = () => {
             const [active, setActive] = useState(false);
             const [countdown, setCountdown] = useState(3);
             const [status, setStatus] = useState('READY');
-
             const handlePress = () => {
-                if(active) {
-                    setActive(false);
-                    setStatus('CANCELLED');
-                    setTimeout(() => setStatus('READY'), 2000);
-                    return;
-                }
-                setActive(true);
-                setCountdown(3);
-                setStatus('ARMING...');
-                
+                if(active) { setActive(false); setStatus('CANCELLED'); setTimeout(() => setStatus('READY'), 2000); return; }
+                setActive(true); setCountdown(3); setStatus('ARMING...');
                 let count = 3;
                 const timer = setInterval(() => {
-                    count--;
-                    setCountdown(count);
-                    if(count <= 0) {
-                        clearInterval(timer);
-                        setStatus('SIGNAL SENT');
-                        // Haptic feedback if available
-                        if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                    }
+                    count--; setCountdown(count);
+                    if(count <= 0) { clearInterval(timer); setStatus('SIGNAL SENT'); if(navigator.vibrate) navigator.vibrate([200, 100, 200]); }
                 }, 1000);
             };
-
             return (
                 <div className="flex flex-col items-center">
-                    <button 
-                        onClick={handlePress}
-                        className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500 border-4 ${active ? 'bg-rose-600 border-rose-400 shadow-[0_0_100px_rgba(225,29,72,0.6)] scale-105' : 'bg-gradient-to-br from-rose-900 to-black border-white/10 shadow-2xl'}`}
-                    >
+                    <button onClick={handlePress} className={`relative w-48 h-48 rounded-full flex items-center justify-center transition-all duration-500 border-4 ${active ? 'bg-rose-600 border-rose-400 shadow-[0_0_100px_rgba(225,29,72,0.6)] scale-105' : 'bg-gradient-to-br from-rose-900 to-black border-white/10 shadow-2xl'}`}>
                         {active && <div className="absolute inset-0 rounded-full border border-white/50 animate-ping"></div>}
                         <div className="text-center z-10">
                             <Icons.Siren className={`w-12 h-12 mx-auto mb-2 text-white ${active ? 'animate-bounce' : ''}`} />
                             <span className="text-3xl font-black text-white tracking-widest">SOS</span>
                         </div>
                     </button>
-                    <div className="mt-6 font-mono text-rose-400 font-bold uppercase tracking-[0.2em] text-sm animate-pulse">
-                        {status === 'ARMING...' ? `SENDING IN ${countdown}s` : status}
-                    </div>
+                    <div className="mt-6 font-mono text-rose-400 font-bold uppercase tracking-[0.2em] text-sm animate-pulse">{status === 'ARMING...' ? `SENDING IN ${countdown}s` : status}</div>
                 </div>
             );
         };
 
         const ChatInterface = () => {
-            const [messages, setMessages] = useState([
-                { id: 1, text: "Raksha AI Legal Sentinel Online. How can I assist?", sender: 'bot' }
-            ]);
+            const [messages, setMessages] = useState([{ id: 1, text: "Raksha AI Legal Sentinel Online. How can I assist?", sender: 'bot' }]);
             const [input, setInput] = useState('');
             const [typing, setTyping] = useState(false);
             const scrollRef = useRef(null);
-
             useEffect(() => { scrollRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages, typing]);
-
             const send = () => {
                 if(!input.trim()) return;
                 const userMsg = { id: Date.now(), text: input, sender: 'user' };
-                setMessages(prev => [...prev, userMsg]);
-                setInput('');
-                setTyping(true);
-
-                // Simulate AI Response
+                setMessages(prev => [...prev, userMsg]); setInput(''); setTyping(true);
                 setTimeout(() => {
-                    const responses = [
-                        "I've logged that incident securely.", 
-                        "Connecting you to the nearest legal aid cell...", 
-                        "Under Section 46(4), you cannot be arrested after sunset.",
-                        "Location tracked. Help is on the way."
-                    ];
+                    const responses = ["I've logged that incident securely.", "Connecting you to the nearest legal aid cell...", "Under Section 46(4), you cannot be arrested after sunset.", "Location tracked. Help is on the way."];
                     const randomResp = responses[Math.floor(Math.random() * responses.length)];
-                    setMessages(prev => [...prev, { id: Date.now()+1, text: randomResp, sender: 'bot' }]);
-                    setTyping(false);
+                    setMessages(prev => [...prev, { id: Date.now()+1, text: randomResp, sender: 'bot' }]); setTyping(false);
                 }, 1500);
             };
-
             return (
                 <div className="flex flex-col h-[60vh] md:h-full bg-black/20 rounded-[2rem] border border-white/10 overflow-hidden">
-                    <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div>
-                        <span className="text-xs font-bold uppercase tracking-widest">Legal Sentinel AI</span>
-                    </div>
+                    <div className="p-4 bg-white/5 border-b border-white/5 flex items-center gap-3"><div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></div><span className="text-xs font-bold uppercase tracking-widest">Legal Sentinel AI</span></div>
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {messages.map(m => (
-                            <div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                <div className={`max-w-[80%] p-4 rounded-2xl text-sm ${m.sender === 'user' ? 'bg-rose-600 text-white rounded-tr-none' : 'bg-white/10 text-slate-200 rounded-tl-none'}`}>
-                                    {m.text}
-                                </div>
-                            </div>
-                        ))}
-                        {typing && <div className="flex items-center gap-1 p-2"><div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce"></div><div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce delay-75"></div><div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce delay-150"></div></div>}
+                        {messages.map(m => (<div key={m.id} className={`flex ${m.sender === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[80%] p-4 rounded-2xl text-sm ${m.sender === 'user' ? 'bg-rose-600 text-white rounded-tr-none' : 'bg-white/10 text-slate-200 rounded-tl-none'}`}>{m.text}</div></div>))}
+                        {typing && <div className="flex items-center gap-1 p-2"><div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce"></div><div className="w-1.5 h-1.5 bg-slate-500 rounded-full animate-bounce delay-75"></div></div>}
                         <div ref={scrollRef}></div>
                     </div>
-                    <div className="p-3 bg-white/5 border-t border-white/5 flex gap-2">
-                        <input 
-                            value={input} 
-                            onChange={e => setInput(e.target.value)}
-                            onKeyDown={e => e.key === 'Enter' && send()}
-                            placeholder="Type query..." 
-                            className="flex-1 bg-transparent border-none outline-none text-white text-sm"
-                        />
-                        <button onClick={send} className="p-2 bg-rose-600 rounded-xl text-white"><Icons.Send className="w-4 h-4" /></button>
-                    </div>
+                    <div className="p-3 bg-white/5 border-t border-white/5 flex gap-2"><input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && send()} placeholder="Type query..." className="flex-1 bg-transparent border-none outline-none text-white text-sm" /><button onClick={send} className="p-2 bg-rose-600 rounded-xl text-white"><Icons.Send className="w-4 h-4" /></button></div>
                 </div>
             );
         };
 
         const AdvancedMap = () => (
-            <div className="relative w-full h-[300px] md:h-full bg-slate-900 rounded-[2rem] overflow-hidden border border-white/10 group">
+            <div className="relative w-full h-[70vh] md:h-full bg-slate-900 rounded-[2rem] overflow-hidden border border-white/10 group">
                 <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]"></div>
-                
-                {/* Simulated Map Elements */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-rose-500/20 rounded-full animate-ping"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-rose-500 rounded-full border-2 border-white shadow-[0_0_20px_rgba(244,63,94,1)]"></div>
-                
-                {/* Safe Zones */}
                 <div className="absolute top-10 left-10 w-20 h-20 bg-emerald-500/20 rounded-full blur-xl"></div>
                 <div className="absolute bottom-20 right-10 w-24 h-24 bg-rose-500/10 rounded-full blur-xl"></div>
-
-                {/* UI Overlay */}
                 <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
-                    <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10">
-                        <span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> GPS Active
-                        </span>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                        <div className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10"><Icons.Map className="w-4 h-4 text-white"/></div>
-                    </div>
+                    <div className="bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg border border-white/10"><span className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> GPS Active</span></div>
+                    <div className="flex flex-col gap-2"><div className="w-8 h-8 bg-black/60 backdrop-blur-md rounded-lg flex items-center justify-center border border-white/10"><Icons.Map className="w-4 h-4 text-white"/></div></div>
                 </div>
             </div>
         );
 
-        // --- FAKE CALL MODULE ---
         const FakeCall = ({ onClose }) => {
             const [status, setStatus] = useState('incoming');
-            
             return (
                 <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-between py-20 animate-fade-in">
                     {status === 'incoming' ? (
                         <>
-                            <div className="text-center">
-                                <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center"><Icons.Users className="w-12 h-12 text-gray-500"/></div>
-                                <h2 className="text-3xl text-white font-medium">Mom</h2>
-                                <p className="text-gray-400">Mobile</p>
-                            </div>
-                            <div className="w-full max-w-xs flex justify-between px-8">
-                                <button onClick={onClose} className="flex flex-col items-center gap-2">
-                                    <div className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center"><Icons.PhoneOff className="w-8 h-8 text-white"/></div>
-                                    <span className="text-white text-sm">Decline</span>
-                                </button>
-                                <button onClick={() => setStatus('active')} className="flex flex-col items-center gap-2">
-                                    <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce"><Icons.Phone className="w-8 h-8 text-white"/></div>
-                                    <span className="text-white text-sm">Accept</span>
-                                </button>
-                            </div>
+                            <div className="text-center"><div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center"><Icons.Users className="w-12 h-12 text-gray-500"/></div><h2 className="text-3xl text-white font-medium">Mom</h2><p className="text-gray-400">Mobile</p></div>
+                            <div className="w-full max-w-xs flex justify-between px-8"><button onClick={onClose} className="flex flex-col items-center gap-2"><div className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center"><Icons.PhoneOff className="w-8 h-8 text-white"/></div><span className="text-white text-sm">Decline</span></button><button onClick={() => setStatus('active')} className="flex flex-col items-center gap-2"><div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center animate-bounce"><Icons.Phone className="w-8 h-8 text-white"/></div><span className="text-white text-sm">Accept</span></button></div>
                         </>
                     ) : (
                         <>
-                            <div className="text-center mt-12">
-                                <h2 className="text-3xl text-white font-medium">Mom</h2>
-                                <p className="text-emerald-400 mt-2 font-mono">00:14</p>
-                            </div>
-                            <div className="grid grid-cols-3 gap-6 mb-12">
-                                {[1,2,3,4,5,6].map(i => <div key={i} className="w-16 h-16 rounded-full bg-white/10 border border-white/5 flex items-center justify-center"><div className="w-1 h-1 bg-white rounded-full"></div></div>)}
-                            </div>
+                            <div className="text-center mt-12"><h2 className="text-3xl text-white font-medium">Mom</h2><p className="text-emerald-400 mt-2 font-mono">00:14</p></div>
+                            <div className="grid grid-cols-3 gap-6 mb-12">{[1,2,3,4,5,6].map(i => <div key={i} className="w-16 h-16 rounded-full bg-white/10 border border-white/5 flex items-center justify-center"><div className="w-1 h-1 bg-white rounded-full"></div></div>)}</div>
                             <button onClick={onClose} className="w-16 h-16 bg-rose-500 rounded-full flex items-center justify-center mb-8"><Icons.PhoneOff className="w-8 h-8 text-white"/></button>
                         </>
                     )}
@@ -459,29 +369,19 @@
             );
         };
 
-        // --- MAIN APP SHELL ---
         const App = () => {
             const { user, loading, login, logout } = useAuth();
-            const [view, setView] = useState('intro'); // intro, auth, home, features, legal
-            const [menuOpen, setMenuOpen] = useState(false);
+            const [view, setView] = useState('intro');
             const [sirenOn, setSirenOn] = useState(false);
             const [fakeCallOpen, setFakeCallOpen] = useState(false);
-            
-            // Audio Ref
             const sirenAudio = useRef(new Audio("https://cdn.freesound.org/previews/336/336899_4939433-lq.mp3"));
 
             const toggleSiren = () => {
-                if(sirenOn) {
-                    sirenAudio.current.pause();
-                    sirenAudio.current.currentTime = 0;
-                } else {
-                    sirenAudio.current.loop = true;
-                    sirenAudio.current.play().catch(console.error);
-                }
+                if(sirenOn) { sirenAudio.current.pause(); sirenAudio.current.currentTime = 0; }
+                else { sirenAudio.current.loop = true; sirenAudio.current.play().catch(console.error); }
                 setSirenOn(!sirenOn);
             };
 
-            // View Management
             useEffect(() => {
                 if (view === 'intro') return;
                 if (!user && view !== 'auth') setView('auth');
@@ -489,12 +389,8 @@
             }, [user, view]);
 
             const NavItem = ({ id, icon: Icon, label }) => (
-                <button 
-                    onClick={() => { setView(id); setMenuOpen(false); }}
-                    className={`flex flex-col items-center gap-1 p-2 ${view === id ? 'text-rose-500' : 'text-slate-500'}`}
-                >
-                    <Icon className="w-6 h-6" />
-                    <span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
+                <button onClick={() => setView(id)} className={`flex flex-col items-center gap-1 p-2 ${view === id ? 'text-rose-500' : 'text-slate-500'}`}>
+                    <Icon className="w-6 h-6" /><span className="text-[10px] font-bold uppercase tracking-wide">{label}</span>
                 </button>
             );
 
@@ -502,145 +398,76 @@
             if (!user) return <AuthScreen onLogin={login} loading={loading} />;
 
             return (
-                <div className="min-h-screen flex flex-col pb-24 md:pb-0 relative overflow-hidden">
+                <div className="min-h-screen flex flex-col relative overflow-hidden">
                     <CyberBackground />
                     {sirenOn && <div className="strobe-overlay"></div>}
                     {fakeCallOpen && <FakeCall onClose={() => setFakeCallOpen(false)} />}
 
-                    {/* TOP HEADER */}
                     <header className="sticky top-0 z-40 bg-[#02000f]/80 backdrop-blur-md border-b border-white/5 px-6 py-4 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-rose-600 p-2 rounded-lg shadow-lg shadow-rose-600/20">
-                                <Icons.Shield className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-xl font-black text-white tracking-tighter">
-                                RAKSHA<span className="text-rose-500">.AI</span>
-                            </span>
-                        </div>
+                        <div className="flex items-center gap-3"><div className="bg-rose-600 p-2 rounded-lg shadow-lg shadow-rose-600/20"><Icons.Shield className="w-5 h-5 text-white" /></div><span className="text-xl font-black text-white tracking-tighter">RAKSHA<span className="text-rose-500">.AI</span></span></div>
                         <div className="flex items-center gap-4">
                             <div className="hidden md:flex items-center gap-6 mr-4">
-                                <button onClick={() => setView('home')} className="text-xs font-bold uppercase hover:text-rose-500 transition-colors">Command</button>
-                                <button onClick={() => setView('features')} className="text-xs font-bold uppercase hover:text-rose-500 transition-colors">Protocol</button>
-                                <button onClick={() => setView('legal')} className="text-xs font-bold uppercase hover:text-rose-500 transition-colors">Legal</button>
+                                <button onClick={() => setView('home')} className={`text-xs font-bold uppercase hover:text-rose-500 transition-colors ${view === 'home' ? 'text-rose-500' : ''}`}>Command</button>
+                                <button onClick={() => setView('protocol')} className={`text-xs font-bold uppercase hover:text-rose-500 transition-colors ${view === 'protocol' ? 'text-rose-500' : ''}`}>Protocol</button>
+                                <button onClick={() => setView('map')} className={`text-xs font-bold uppercase hover:text-rose-500 transition-colors ${view === 'map' ? 'text-rose-500' : ''}`}>Map</button>
+                                <button onClick={() => setView('legal')} className={`text-xs font-bold uppercase hover:text-rose-500 transition-colors ${view === 'legal' ? 'text-rose-500' : ''}`}>Legal</button>
                             </div>
-                            <button onClick={logout} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
-                                <Icons.LogOut className="w-4 h-4" />
-                            </button>
+                            <button onClick={logout} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white transition-colors"><Icons.LogOut className="w-4 h-4" /></button>
                         </div>
                     </header>
 
-                    {/* MAIN CONTENT AREA */}
-                    <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fade-in overflow-y-auto">
-                        
-                        {/* VIEW: HOME */}
+                    <main className="flex-1 max-w-7xl mx-auto w-full p-6 animate-fade-in pb-32 md:pb-6">
                         {view === 'home' && (
                             <div className="flex flex-col lg:flex-row gap-8 items-center justify-center min-h-[70vh]">
                                 <div className="w-full max-w-md space-y-8 text-center lg:text-left">
-                                    <div className="inline-block border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 rounded-full">
-                                        <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                                            Sector Secure
-                                        </span>
-                                    </div>
-                                    <h1 className="text-5xl font-black text-white leading-none">
-                                        HELLO, <br/>
-                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-500">{user.name.toUpperCase()}</span>
-                                    </h1>
-                                    
-                                    {/* Action Grid */}
+                                    <div className="inline-block border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 rounded-full"><span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Sector Secure</span></div>
+                                    <h1 className="text-5xl font-black text-white leading-none">HELLO, <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-purple-500">{user.name.toUpperCase()}</span></h1>
                                     <div className="grid grid-cols-2 gap-4">
-                                        <button onClick={() => setFakeCallOpen(true)} className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-2 hover:bg-white/5 transition-colors active:scale-95">
-                                            <Icons.Ghost className="w-8 h-8 text-purple-400" />
-                                            <span className="text-xs font-bold uppercase">Stealth Mode</span>
-                                        </button>
-                                        <button onClick={toggleSiren} className={`glass-panel p-4 rounded-2xl flex flex-col items-center gap-2 transition-colors active:scale-95 ${sirenOn ? 'bg-rose-600 border-rose-500' : 'hover:bg-white/5'}`}>
-                                            {sirenOn ? <Icons.VolumeX className="w-8 h-8 text-white" /> : <Icons.Volume2 className="w-8 h-8 text-rose-400" />}
-                                            <span className={`text-xs font-bold uppercase ${sirenOn ? 'text-white' : ''}`}>Siren</span>
-                                        </button>
+                                        <button onClick={() => setFakeCallOpen(true)} className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-2 hover:bg-white/5 transition-colors active:scale-95"><Icons.Ghost className="w-8 h-8 text-purple-400" /><span className="text-xs font-bold uppercase">Stealth Mode</span></button>
+                                        <button onClick={toggleSiren} className={`glass-panel p-4 rounded-2xl flex flex-col items-center gap-2 transition-colors active:scale-95 ${sirenOn ? 'bg-rose-600 border-rose-500' : 'hover:bg-white/5'}`}>{sirenOn ? <Icons.VolumeX className="w-8 h-8 text-white" /> : <Icons.Volume2 className="w-8 h-8 text-rose-400" />}<span className={`text-xs font-bold uppercase ${sirenOn ? 'text-white' : ''}`}>Siren</span></button>
                                     </div>
                                 </div>
-
-                                <div className="relative z-10">
-                                    <div className="absolute inset-0 bg-rose-500/20 blur-[100px] animate-pulse rounded-full pointer-events-none"></div>
-                                    <SOSButton />
-                                </div>
+                                <div className="relative z-10"><div className="absolute inset-0 bg-rose-500/20 blur-[100px] animate-pulse rounded-full pointer-events-none"></div><SOSButton /></div>
                             </div>
                         )}
 
-                        {/* VIEW: FEATURES (Dashboard) */}
-                        {view === 'features' && (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                <div className="lg:col-span-2 glass-card p-6 rounded-[2rem]">
-                                    <div className="flex items-center justify-between mb-6">
-                                        <h2 className="text-xl font-bold text-white">Live Intel</h2>
-                                        <div className="px-2 py-1 bg-rose-500/10 border border-rose-500/20 rounded text-[10px] text-rose-400 font-mono">LIVE FEED</div>
-                                    </div>
-                                    <AdvancedMap />
-                                </div>
-                                <div className="glass-card p-6 rounded-[2rem] flex flex-col justify-center">
-                                    <div className="text-center mb-6">
-                                        <div className="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-purple-500/30">
-                                            <Icons.Users className="w-8 h-8 text-purple-400" />
-                                        </div>
-                                        <h3 className="text-lg font-bold text-white">Guardian Circle</h3>
-                                        <p className="text-xs text-slate-400 mt-1">3 Guardians Active</p>
-                                    </div>
-                                    <div className="space-y-3">
-                                        {['Dad', 'Sarah (Sister)', 'Rohit'].map((name, i) => (
-                                            <div key={i} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold">{name[0]}</div>
-                                                    <span className="text-sm font-medium">{name}</span>
-                                                </div>
-                                                <span className="text-[10px] text-emerald-400 font-mono">ONLINE</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
+                        {view === 'protocol' && (
+                            <div className="w-full animate-fade-in">
+                                <div className="text-center mb-8"><h2 className="text-3xl font-black text-white uppercase tracking-tight">Tactical Modules</h2><p className="text-slate-400 text-sm">Active Defense Protocols</p></div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">{FEATURES.map(f => <FeatureCard key={f.id} feature={f} />)}</div>
                             </div>
                         )}
 
-                        {/* VIEW: LEGAL */}
+                        {view === 'map' && (
+                            <div className="h-full flex flex-col animate-fade-in">
+                                <div className="flex items-center justify-between mb-4"><h2 className="text-xl font-bold text-white">Global Intel Map</h2><div className="px-2 py-1 bg-rose-500/10 border border-rose-500/20 rounded text-[10px] text-rose-400 font-mono">LIVE FEED</div></div>
+                                <div className="flex-1 min-h-[60vh]"><AdvancedMap /></div>
+                            </div>
+                        )}
+
                         {view === 'legal' && (
-                            <div className="h-full flex flex-col md:flex-row gap-6 max-h-[80vh]">
+                            <div className="h-full flex flex-col md:flex-row gap-6 max-h-[80vh] animate-fade-in">
                                 <div className="md:w-1/3 glass-card p-6 rounded-[2rem] space-y-6 overflow-y-auto">
                                     <h2 className="text-2xl font-bold text-white">Legal Command</h2>
                                     <div className="space-y-4">
-                                        <div className="p-4 bg-rose-900/20 border border-rose-500/30 rounded-xl">
-                                            <h3 className="text-rose-400 font-bold text-sm mb-1">EMERGENCY: 100</h3>
-                                            <p className="text-xs text-slate-400">Police Rapid Response</p>
-                                        </div>
-                                        <div className="p-4 bg-purple-900/20 border border-purple-500/30 rounded-xl">
-                                            <h3 className="text-purple-400 font-bold text-sm mb-1">WOMEN HELPLINE: 1091</h3>
-                                            <p className="text-xs text-slate-400">24/7 Support Cell</p>
-                                        </div>
+                                        <div className="p-4 bg-rose-900/20 border border-rose-500/30 rounded-xl"><h3 className="text-rose-400 font-bold text-sm mb-1">EMERGENCY: 100</h3><p className="text-xs text-slate-400">Police Rapid Response</p></div>
+                                        <div className="p-4 bg-purple-900/20 border border-purple-500/30 rounded-xl"><h3 className="text-purple-400 font-bold text-sm mb-1">WOMEN HELPLINE: 1091</h3><p className="text-xs text-slate-400">24/7 Support Cell</p></div>
                                     </div>
-                                    <div className="border-t border-white/10 pt-4">
-                                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Your Rights</h4>
-                                        <ul className="space-y-3 text-sm text-slate-300">
-                                            <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>Zero FIR Registration</li>
-                                            <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>No Arrest After Sunset</li>
-                                            <li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>Privacy During Statement</li>
-                                        </ul>
-                                    </div>
+                                    <div className="border-t border-white/10 pt-4"><h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-3">Your Rights</h4><ul className="space-y-3 text-sm text-slate-300"><li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>Zero FIR Registration</li><li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>No Arrest After Sunset</li><li className="flex gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5"></div>Privacy During Statement</li></ul></div>
                                 </div>
-                                <div className="md:w-2/3">
-                                    <ChatInterface />
-                                </div>
+                                <div className="md:w-2/3"><ChatInterface /></div>
                             </div>
                         )}
-
                     </main>
 
-                    {/* MOBILE BOTTOM NAV */}
                     <nav className="md:hidden fixed bottom-0 w-full bg-[#02000f]/90 backdrop-blur-xl border-t border-white/10 pb-safe z-50">
-                        <div className="flex justify-around items-center h-16">
+                        <div className="flex justify-around items-center h-16 px-2">
                             <NavItem id="home" icon={Icons.Shield} label="Home" />
-                            <NavItem id="features" icon={Icons.Map} label="Map" />
-                            <NavItem id="legal" icon={Icons.Bot} label="Legal" />
+                            <NavItem id="protocol" icon={Icons.ShieldAlert} label="Protocol" />
+                            <NavItem id="map" icon={Icons.Map} label="Map" />
+                            <NavItem id="legal" icon={Icons.Database} label="Legal" />
                         </div>
                     </nav>
-
                 </div>
             );
         };
@@ -650,3 +477,4 @@
     </script>
 </body>
 </html>
+
