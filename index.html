@@ -5,17 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Raksha X</title>
     
-    <!-- PWA Manifest (Data URI Fallback for Offline) -->
-    <link rel="manifest" id="manifest-placeholder" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmFra3NoYSBYIiwic2hvcnRfbmFtZSI6IlJha3NoYSBYIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDA1MTAiLCJ0aGVtZV9jb2xvciI6IiNmNDNmNWUiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI1NTUvMjU1NTU3Mi5wbmciLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
+    <!-- PWA Manifest - Hardcoded Data URI for Maximum Stability -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmFra3NoYSBYIiwic2hvcnRfbmFtZSI6IlJha3NoYSBYIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMwMDA1MTAiLCJ0aGVtZV9jb2xvciI6IiNmNDNmNWUiLCJvcmllbnRhdGlvbiI6InBvcnRyYWl0IiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vY2RuLWljb25zLXBuZy5mbGF0aWNvbi5jb20vNTEyLzI1NTUvMjU1NTU3Mi5wbmciLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIn1dfQ==">
     
-    <!-- STRICT Standalone Enforcement -->
+    <!-- iOS / PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Raksha X">
     <meta name="theme-color" content="#000510">
-    <meta name="msapplication-navbutton-color" content="#000510">
-    <meta name="msapplication-starturl" content=".">
 
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -25,39 +23,42 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- System Config -->
+    <!-- Tailwind Config -->
     <script>
-        // --- DYNAMIC MANIFEST INJECTION (Forces Standalone) ---
-        try {
-            const manifest = {
-                name: "Raksha X",
-                short_name: "Raksha X",
-                // Use current location to ensure it opens the correct file
-                start_url: window.location.href, 
-                display: "standalone",
-                background_color: "#000510",
-                theme_color: "#f43f5e",
-                orientation: "portrait",
-                icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2555/2555572.png", sizes: "192x192", type: "image/png" }]
-            };
-            const stringManifest = JSON.stringify(manifest);
-            const blob = new Blob([stringManifest], {type: 'application/json'});
-            const manifestURL = URL.createObjectURL(blob);
-            document.querySelector('#manifest-placeholder').setAttribute('href', manifestURL);
-        } catch (e) {
-            console.warn("Manifest injection failed, using fallback.");
-        }
-
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Rajdhani"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
-                    colors: { cyber: { bg: '#000510', glass: 'rgba(10, 15, 30, 0.8)', primary: '#f43f5e', accent: '#06b6d4' } },
-                    animation: { 'pulse-glow': 'pulse-glow 2s infinite', 'radar': 'radar 4s linear infinite', 'float': 'float 6s ease-in-out infinite' },
+                    fontFamily: {
+                        sans: ['"Rajdhani"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        cyber: {
+                            bg: '#000510',
+                            glass: 'rgba(10, 15, 30, 0.8)',
+                            primary: '#f43f5e',
+                            accent: '#06b6d4'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'radar': 'radar 4s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
                     keyframes: {
-                        'pulse-glow': { '0%, 100%': { boxShadow: '0 0 20px rgba(244, 63, 94, 0.5)' }, '50%': { boxShadow: '0 0 40px rgba(244, 63, 94, 0.8)' } },
-                        'radar': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } },
-                        'float': { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } }
+                        'pulse-glow': {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(244, 63, 94, 0.5)' },
+                            '50%': { boxShadow: '0 0 40px rgba(244, 63, 94, 0.8)' }
+                        },
+                        'radar': {
+                            '0%': { transform: 'rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg)' }
+                        },
+                        'float': {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' }
+                        }
                     }
                 }
             }
@@ -65,17 +66,59 @@
     </script>
 
     <style>
-        body { background-color: #000510; color: #e2e8f0; overflow: hidden; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
-        .glass-panel { background: rgba(13, 18, 30, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); }
-        .glass-card { background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); }
-        .reactor-core { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fb7185, #e11d48); box-shadow: 0 0 50px rgba(225, 29, 72, 0.5), inset 0 0 20px rgba(255,255,255,0.3); position: relative; z-index: 10; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
+        body { 
+            background-color: #000510; 
+            color: #e2e8f0; 
+            overflow: hidden; 
+            -webkit-tap-highlight-color: transparent; 
+            touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+        
+        .glass-panel {
+            background: rgba(13, 18, 30, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .glass-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+        }
+
+        .reactor-core {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #fb7185, #e11d48);
+            box-shadow: 0 0 50px rgba(225, 29, 72, 0.5), inset 0 0 20px rgba(255,255,255,0.3);
+            position: relative; z-index: 10;
+            display: flex; justify-content: center; align-items: center;
+            transition: all 0.3s ease;
+        }
         .reactor-core:active { transform: scale(0.92); }
-        .reactor-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(244, 63, 94, 0.3); animation: radar 8s linear infinite; }
+        
+        .reactor-ring {
+            position: absolute; border-radius: 50%; border: 1px solid rgba(244, 63, 94, 0.3);
+            animation: radar 8s linear infinite;
+        }
         .r1 { width: 180px; height: 180px; border-top-color: #f43f5e; animation-duration: 6s; }
         .r2 { width: 220px; height: 220px; border-left-color: #f43f5e; animation-duration: 10s; animation-direction: reverse; opacity: 0.6; }
-        .grid-bg { background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 30px 30px; }
+        
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+        
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
         ::-webkit-scrollbar { width: 0px; background: transparent; }
         .pb-safe { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
     </style>
@@ -115,7 +158,8 @@
             return <Comp className={className} {...props} />;
         };
 
-        const useSupabaseAuth = () => {
+        // --- AUTH HOOK ---
+        function useSupabaseAuth() {
             const [session, setSession] = useState(null);
             const [user, setUser] = useState(null);
             const [loading, setLoading] = useState(true);
@@ -135,8 +179,9 @@
                 signUp: async (email, password) => { setError(null); setLoading(true); const { error } = await supabase.auth.signUp({ email, password }); if(error) setError(error.message); setLoading(false); }, 
                 signOut: async () => await supabase.auth.signOut() 
             };
-        };
+        }
 
+        // --- AUTH SCREEN ---
         const AuthScreen = ({ signIn, signUp, error, loading, setError }) => {
             const [isLogin, setIsLogin] = useState(true);
             const [email, setEmail] = useState('');
@@ -160,6 +205,44 @@
             );
         };
 
+        // --- COMPONENTS ---
+        const SOSButton = () => {
+            const [active, setActive] = useState(false);
+            const [text, setText] = useState('SOS');
+            const handlePress = () => {
+                if(active) return;
+                setActive(true); setText('SENT');
+                if(navigator.vibrate) navigator.vibrate([500, 200, 500]);
+                setTimeout(() => { setActive(false); setText('SOS'); }, 3000);
+            };
+            return (
+                <div className="flex flex-col items-center justify-center relative py-6">
+                    <div className="reactor-container">
+                        <div className="reactor-ring r1"></div><div className="reactor-ring r2"></div>
+                        <button onClick={handlePress} className={`reactor-core ${active ? 'animate-pulse' : ''}`}><div className="flex flex-col items-center text-white z-20"><Icon name="Siren" className="w-10 h-10 mb-1 drop-shadow-lg" /><span className="text-3xl font-black tracking-widest drop-shadow-md">{text}</span></div></button>
+                    </div>
+                    <div className="mt-4 text-rose-500 font-mono text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">{active ? 'DISTRESS SIGNAL LIVE' : 'SYSTEM ARMED'}</div>
+                </div>
+            );
+        };
+
+        const StatusBadge = ({ label, value, color }) => (
+            <div className="glass-panel p-3 rounded-xl flex flex-col items-center justify-center w-full border border-white/5 relative overflow-hidden group">
+                <div className={`absolute inset-0 bg-${color}-500/5 group-hover:bg-${color}-500/10 transition-colors`}></div>
+                <span className={`text-${color}-400 font-bold text-lg font-mono relative z-10`}>{value}</span>
+                <span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1 relative z-10">{label}</span>
+            </div>
+        );
+
+        const QuickAction = ({ icon, label, color, onClick }) => (
+            <button onClick={onClick} className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-transform border border-white/5 hover:border-white/10 group relative overflow-hidden">
+                <div className={`absolute top-0 right-0 w-8 h-8 bg-${color}-500/20 blur-xl rounded-full`}></div>
+                <div className={`w-12 h-12 rounded-full bg-${color}-500/10 flex items-center justify-center text-${color}-400 group-hover:scale-110 transition-transform shadow-lg shadow-${color}-500/10`}><Icon name={icon} className="w-6 h-6" /></div>
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-300 group-hover:text-white transition-colors">{label}</span>
+            </button>
+        );
+
+        // --- VIEWS ---
         const HomeView = ({ user, setView }) => {
             const [siren, setSiren] = useState(false);
             const handleSOS = () => { if(navigator.vibrate) navigator.vibrate([500,200,500]); alert("SOS SIGNAL BROADCASTED"); };
