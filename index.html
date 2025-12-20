@@ -20,7 +20,6 @@
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
@@ -44,17 +43,10 @@
                         'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'float': 'float 6s ease-in-out infinite',
                         'glow': 'glow 2s ease-in-out infinite alternate',
-                        'shake': 'shake 0.82s cubic-bezier(.36,.07,.19,.97) both',
                     },
                     keyframes: {
                         float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-10px)' } },
-                        glow: { '0%': { boxShadow: '0 0 20px rgba(244, 63, 94, 0.2)' }, '100%': { boxShadow: '0 0 50px rgba(244, 63, 94, 0.6)' } },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
-                        }
+                        glow: { '0%': { boxShadow: '0 0 20px rgba(244, 63, 94, 0.2)' }, '100%': { boxShadow: '0 0 50px rgba(244, 63, 94, 0.6)' } }
                     }
                 }
             }
@@ -71,6 +63,7 @@
             overscroll-behavior: none;
         }
         
+        /* Premium Glassmorphism */
         .glass-panel {
             background: rgba(20, 20, 30, 0.4);
             backdrop-filter: blur(20px);
@@ -87,6 +80,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
         }
 
+        /* Modern SOS Button */
         .sos-container {
             position: relative;
             width: 240px;
@@ -101,7 +95,10 @@
             height: 180px;
             border-radius: 50%;
             background: radial-gradient(120% 120% at 50% 50%, #f43f5e 0%, #9f1239 100%);
-            box-shadow: 0 0 60px rgba(244, 63, 94, 0.4), inset 0 2px 20px rgba(255, 255, 255, 0.4), inset 0 -5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 
+                0 0 60px rgba(244, 63, 94, 0.4),
+                inset 0 2px 20px rgba(255, 255, 255, 0.4),
+                inset 0 -5px 15px rgba(0, 0, 0, 0.3);
             position: relative;
             z-index: 10;
             display: flex;
@@ -142,13 +139,14 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .pb-safe { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useRef, useMemo } = React;
+        const { useState, useEffect, useRef } = React;
 
         // --- ICONS ---
         const Icon = ({ name, className, ...props }) => {
@@ -160,7 +158,10 @@
                 Zap: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
                 Eye: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
                 Phone: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
+                Grid: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>,
+                FileText: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>,
                 Share: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>,
+                Crosshair: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>,
                 Send: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>,
                 MoreVertical: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>,
                 LogOut: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
@@ -170,9 +171,6 @@
                 Loading: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>,
                 AlertTriangle: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
                 Download: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>,
-                Plus: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>,
-                Trash: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>,
-                PhoneIncoming: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="16 2 16 8 22 8"/><line x1="23" y1="1" x2="16" y2="8"/><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>,
             };
             const Comp = icons[name] || icons.Shield;
             return <Comp className={className} {...props} />;
@@ -180,48 +178,6 @@
 
         // --- GLOBAL SUPABASE ---
         const supabase = window.supabase.createClient('https://onpwkocasxwimhubimny.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ucHdrb2Nhc3h3aW1odWJpbW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTQ4MTUsImV4cCI6MjA3OTU3MDgxNX0.fnYZfulWBgNUKVD8SmF_hi0lMoXG-hbQlb0bBNl2Mg4');
-
-        // --- AUDIO SIREN UTILS ---
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        let sirenOscillator = null;
-        let sirenGain = null;
-        let sirenInterval = null;
-
-        const toggleSirenSound = (shouldPlay) => {
-            if (shouldPlay) {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                if (sirenOscillator) return;
-
-                sirenOscillator = audioCtx.createOscillator();
-                sirenGain = audioCtx.createGain();
-                
-                sirenOscillator.type = 'sawtooth';
-                sirenOscillator.frequency.value = 600;
-                sirenGain.gain.value = 1.0; 
-                
-                sirenOscillator.connect(sirenGain);
-                sirenGain.connect(audioCtx.destination);
-                
-                sirenOscillator.start();
-
-                let high = false;
-                sirenInterval = setInterval(() => {
-                    const now = audioCtx.currentTime;
-                    sirenOscillator.frequency.cancelScheduledValues(now);
-                    sirenOscillator.frequency.linearRampToValueAtTime(high ? 600 : 1200, now + 0.6);
-                    high = !high;
-                }, 600);
-            } else {
-                if (sirenOscillator) {
-                    sirenOscillator.stop();
-                    sirenOscillator.disconnect();
-                    sirenGain.disconnect();
-                    clearInterval(sirenInterval);
-                    sirenOscillator = null;
-                    sirenGain = null;
-                }
-            }
-        };
 
         // --- AUTH HOOK ---
         function useSupabaseAuth() {
@@ -260,7 +216,7 @@
                         {error && <div className="w-full bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 mb-6 flex items-start gap-3"><Icon name="AlertTriangle" className="w-5 h-5 text-rose-500 shrink-0" /><span className="text-xs text-rose-300 font-mono">{error}</span></div>}
                         <form onSubmit={(e) => { e.preventDefault(); isLogin ? signIn(email, password) : signUp(email, password); }} className="w-full space-y-4">
                             <div className="relative"><input type="email" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" placeholder="email@secure.net" value={email} onChange={(e) => setEmail(e.target.value)} /><Icon name="Users" className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" /></div>
-                            <div className="relative"><input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} /><Icon name="Shield" className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" /></div>
+                            <div className="relative"><input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} /><Icon name="Lock" className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" /></div>
                             <button type="submit" disabled={loading} className="w-full py-4 bg-white text-black rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg relative z-10 active:scale-95 transition-transform mt-4 flex justify-center items-center gap-2">{loading ? <Icon name="Loading" className="animate-spin w-4 h-4"/> : (isLogin ? 'AUTHENTICATE' : 'REGISTER')} <Icon name="ChevronRight" className="w-4 h-4"/></button>
                         </form>
                         <div className="mt-6 flex gap-2 text-xs text-slate-400"><span>{isLogin ? "No Access?" : "Has Access?"}</span><button onClick={() => { setIsLogin(!isLogin); setError(null); }} className="text-rose-400 font-bold hover:text-white transition-colors uppercase tracking-wider">{isLogin ? "Join" : "Login"}</button></div>
@@ -269,128 +225,15 @@
             );
         };
 
-        // --- FAKE CALL COMPONENT ---
-        const FakeCallScreen = ({ onEnd }) => {
-            const [status, setStatus] = useState('incoming'); 
-            const [timer, setTimer] = useState(0);
-
-            useEffect(() => {
-                let t;
-                if (status === 'active') {
-                    t = setInterval(() => setTimer(c => c + 1), 1000);
-                }
-                return () => clearInterval(t);
-            }, [status]);
-
-            const formatTime = (s) => {
-                const mins = Math.floor(s / 60);
-                const secs = s % 60;
-                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-            }
-
-            return (
-                <div className="fixed inset-0 z-[100] bg-black flex flex-col items-center pt-20 pb-10 px-8 animate-fade-in bg-cover bg-center" style={{backgroundImage: 'url("https://images.unsplash.com/photo-1616422285623-13ff0162193c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3")'}}>
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
-                    
-                    <div className="relative z-10 flex flex-col items-center w-full h-full justify-between">
-                        <div className="flex flex-col items-center">
-                            <div className="w-24 h-24 rounded-full bg-slate-300 flex items-center justify-center mb-4 border-2 border-white/20">
-                                <Icon name="Users" className="w-12 h-12 text-slate-500" />
-                            </div>
-                            <h2 className="text-3xl text-white font-normal mb-1">Dad</h2>
-                            <p className="text-white/70 text-lg">{status === 'incoming' ? 'Raksha Mobile...' : formatTime(timer)}</p>
-                        </div>
-
-                        <div className="w-full">
-                            {status === 'incoming' ? (
-                                <div className="flex justify-between w-full px-4">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <button onClick={onEnd} className="w-16 h-16 rounded-full bg-rose-500 flex items-center justify-center animate-pulse"><Icon name="Phone" className="w-8 h-8 text-white rotate-[135deg]" /></button>
-                                        <span className="text-white text-xs">Decline</span>
-                                    </div>
-                                    <div className="flex flex-col items-center gap-2">
-                                        <button onClick={() => setStatus('active')} className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center animate-bounce"><Icon name="Phone" className="w-8 h-8 text-white" /></button>
-                                        <span className="text-white text-xs">Accept</span>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="flex justify-center w-full">
-                                    <button onClick={onEnd} className="w-20 h-20 rounded-full bg-rose-500 flex items-center justify-center"><Icon name="Phone" className="w-10 h-10 text-white rotate-[135deg]" /></button>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
         // --- VIEWS ---
-        const HomeView = ({ user, setView, triggerFakeCall }) => {
+        const HomeView = ({ user, setView }) => {
             const [siren, setSiren] = useState(false);
             const [sosActive, setSosActive] = useState(false);
-            const [coords, setCoords] = useState(null);
-
-            // Get location for SOS
-            useEffect(() => {
-                if(navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (pos) => setCoords(pos.coords),
-                        (err) => console.log(err)
-                    );
-                }
-                const initAudio = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); };
-                window.addEventListener('click', initAudio, { once: true });
-                window.addEventListener('touchstart', initAudio, { once: true });
-            }, []);
-
-            // Toggle Siren Sound
-            useEffect(() => {
-                toggleSirenSound(siren);
-            }, [siren]);
             
-            // Shake Detection Logic
-            useEffect(() => {
-                let lastX, lastY, lastZ;
-                let lastTime = 0;
-                const threshold = 15; // Sensitivity
-                
-                const handleMotion = (e) => {
-                    const current = e.accelerationIncludingGravity;
-                    if (!current) return;
-                    
-                    const now = Date.now();
-                    if ((now - lastTime) > 100) {
-                        const diffTime = (now - lastTime);
-                        lastTime = now;
-                        
-                        if (lastX !== undefined) {
-                            const speed = Math.abs(current.x + current.y + current.z - lastX - lastY - lastZ) / diffTime * 10000;
-                            if (speed > threshold) {
-                                handleSOS(); 
-                            }
-                        }
-                        lastX = current.x;
-                        lastY = current.y;
-                        lastZ = current.z;
-                    }
-                };
-                window.addEventListener('devicemotion', handleMotion);
-                return () => window.removeEventListener('devicemotion', handleMotion);
-            }, []);
-
             const handleSOS = () => { 
-                console.log("SOS Disabled");
-                // setSosActive(true);
-                // if(navigator.vibrate) navigator.vibrate([500,200,500]);
-                
-                // if (coords) {
-                //     const text = `HELP! I am in danger. My location: https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
-                //     setTimeout(() => {
-                //         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                //     }, 1000);
-                // }
-
-                // setTimeout(() => setSosActive(false), 3000);
+                setSosActive(true);
+                if(navigator.vibrate) navigator.vibrate([500,200,500]);
+                setTimeout(() => setSosActive(false), 3000);
             };
             
             return (
@@ -403,7 +246,7 @@
                         <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-white border border-white/10">{user.email.charAt(0).toUpperCase()}</div>
                     </div>
                     
-                    {/* SOS BUTTON */}
+                    {/* NEW SOS DESIGN */}
                     <div className="flex-1 flex flex-col justify-center items-center py-4 relative">
                         <div className="sos-container">
                             <div className="sos-ring"></div>
@@ -417,21 +260,21 @@
                         <div className="mt-8 text-rose-500 font-mono text-xs uppercase tracking-[0.3em] font-bold animate-pulse">{sosActive ? 'SIGNAL BROADCASTING...' : 'TAP FOR EMERGENCY'}</div>
                     </div>
 
-                    {/* Quick Actions */}
+                    {/* Quick Actions - Cleaned Up */}
                     <div className="grid grid-cols-2 gap-4 mt-8">
                         <button onClick={() => setSiren(!siren)} className={`glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-all border ${siren ? 'bg-rose-500/20 border-rose-500' : 'border-white/5 hover:border-white/20'}`}>
                             <div className={`w-12 h-12 rounded-full flex items-center justify-center ${siren ? 'bg-rose-500 text-white' : 'bg-white/5 text-rose-400'}`}><Icon name="Zap" className="w-6 h-6" /></div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-white">Siren {siren ? '(ON)' : ''}</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-white">Siren</span>
                         </button>
-                        <button onClick={triggerFakeCall} className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-all border border-white/5 hover:border-white/20">
-                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-purple-400"><Icon name="PhoneIncoming" className="w-6 h-6" /></div>
-                            <span className="text-xs font-bold uppercase tracking-wider text-white">Fake Call</span>
+                        <button className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-all border border-white/5 hover:border-white/20">
+                            <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-purple-400"><Icon name="Eye" className="w-6 h-6" /></div>
+                            <span className="text-xs font-bold uppercase tracking-wider text-white">Stealth</span>
                         </button>
                     </div>
-                    <button onClick={() => handleSOS()} className="mt-4 w-full glass-panel p-4 rounded-2xl flex items-center justify-between border border-white/5 active:scale-95 transition-all">
+                    <button onClick={() => alert("Location Shared")} className="mt-4 w-full glass-panel p-4 rounded-2xl flex items-center justify-between border border-white/5 active:scale-95 transition-all">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400"><Icon name="Share" className="w-5 h-5" /></div>
-                            <div className="text-left"><span className="block text-sm font-bold text-white uppercase">Share Location</span><span className="text-[10px] text-slate-400">Via WhatsApp</span></div>
+                            <div className="text-left"><span className="block text-sm font-bold text-white uppercase">Share Location</span><span className="text-[10px] text-slate-400">With Guardians</span></div>
                         </div>
                         <Icon name="ChevronRight" className="w-5 h-5 text-slate-500" />
                     </button>
@@ -439,116 +282,29 @@
             );
         };
 
-        const MapView = ({ onBack, user }) => {
+        const MapView = ({ onBack }) => {
             const [isExpanded, setIsExpanded] = useState(false);
-            
-            // FRONTEND ONLY: Local state for Guardians (Mock Data)
-            const [guardians, setGuardians] = useState([
-                { id: 1, name: 'Dad', phone: '9876543210' },
-                { id: 2, name: 'Sister', phone: '9123456789' }
-            ]);
-            const [newGuardian, setNewGuardian] = useState({ name: '', phone: '' });
-
-            const addGuardian = () => {
-                if(!newGuardian.name || !newGuardian.phone) return;
-                const newEntry = { id: Date.now(), ...newGuardian };
-                setGuardians([...guardians, newEntry]);
-                setNewGuardian({ name: '', phone: '' });
-            };
-
-            const deleteGuardian = (id) => {
-                setGuardians(guardians.filter(g => g.id !== id));
-            };
-
             return (
                 <div className="h-full w-full relative bg-[#000000] overflow-hidden flex flex-col">
-                    {/* Placeholder Map Container */}
-                    <div className="absolute inset-0 z-0 bg-slate-900/50 flex flex-col items-center justify-center p-10 text-center">
-                        <div className="w-20 h-20 rounded-full bg-slate-800/50 border border-white/5 flex items-center justify-center mb-4">
-                            <Icon name="Map" className="w-8 h-8 text-slate-600" />
-                        </div>
-                        <h3 className="text-white font-bold text-lg mb-2">Map Module Placeholder</h3>
-                        <p className="text-slate-500 text-xs font-mono uppercase tracking-wide">Ready for Backend Integration</p>
-                        <div className="mt-8 grid-bg w-full h-32 opacity-20 border border-white/5 rounded-xl"></div>
-                    </div>
-
-                    <div className="absolute top-6 left-6 z-20"><button onClick={onBack} className="p-3 bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white shadow-lg"><Icon name="ArrowLeft" className="w-6 h-6"/></button></div>
-                    <div className="absolute top-6 right-6 z-20"><div className="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 border-rose-500/30 bg-black/60"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span className="text-[10px] font-mono text-rose-400 font-bold">LIVE GPS</span></div></div>
-                    
-                    {/* Guardian Drawer */}
-                    <div className={`absolute bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${isExpanded ? 'translate-y-0' : 'translate-y-[calc(100%-85px)]'}`}>
-                        <div className="glass-card rounded-t-[2rem] border-t border-white/10 shadow-2xl bg-[#0a0a10]">
-                            <div className="p-6 flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Users" className="w-6 h-6"/></div>
-                                    <div><h3 className="text-base font-bold text-white uppercase tracking-wide">Guardians</h3><p className="text-[10px] text-emerald-400 font-mono tracking-wider">{guardians.length} ACTIVE • SECURE</p></div>
-                                </div>
-                                <Icon name="ChevronRight" className={`w-5 h-5 text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : '-rotate-90'}`}/>
-                            </div>
-                            
-                            {/* CRUD Area */}
-                            <div className="p-6 pt-0 h-80 overflow-y-auto pb-safe">
-                                {/* Add New */}
-                                <div className="mb-4 bg-white/5 rounded-xl p-3 border border-dashed border-white/20">
-                                    <div className="text-xs text-slate-400 mb-2 font-mono uppercase">Add New Contact</div>
-                                    <div className="flex gap-2 mb-2">
-                                        <input className="flex-1 bg-black/30 rounded-lg px-3 py-2 text-sm text-white border border-white/10" placeholder="Name" value={newGuardian.name} onChange={e => setNewGuardian({...newGuardian, name: e.target.value})} />
-                                        <input className="flex-1 bg-black/30 rounded-lg px-3 py-2 text-sm text-white border border-white/10" placeholder="Phone" value={newGuardian.phone} onChange={e => setNewGuardian({...newGuardian, phone: e.target.value})} />
-                                    </div>
-                                    <button onClick={addGuardian} className="w-full bg-emerald-600/20 text-emerald-400 py-2 rounded-lg text-xs font-bold uppercase hover:bg-emerald-600/30">Save Guardian</button>
-                                </div>
-
-                                {/* List */}
-                                <div className="grid grid-cols-1 gap-2">
-                                    {guardians.length === 0 && <div className="text-center text-slate-500 text-xs py-4">No guardians added yet.</div>}
-                                    {guardians.map((g, i) => (
-                                        <div key={i} className="bg-white/5 rounded-xl p-3 flex items-center justify-between border border-white/5">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold text-white">{g.name[0]}</div>
-                                                <div>
-                                                    <div className="text-sm font-bold text-slate-200">{g.name}</div>
-                                                    <div className="text-[10px] text-slate-500 font-mono">{g.phone}</div>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => deleteGuardian(g.id)} className="text-rose-500 p-2"><Icon name="Trash" className="w-4 h-4"/></button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div className="absolute inset-0"><div className="absolute inset-0 grid-bg opacity-30"></div><div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20"><div className="w-[600px] h-[600px] border border-cyan-500/20 rounded-full"></div><div className="w-[300px] h-[300px] bg-gradient-to-t from-cyan-500/20 to-transparent rounded-full animate-[radar_4s_linear_infinite] origin-center"></div></div><div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center"><div className="w-4 h-4 bg-rose-500 rounded-full border-2 border-white shadow-[0_0_20px_#f43f5e] animate-pulse"></div><div className="w-32 h-32 bg-rose-500/10 rounded-full absolute animate-ping"></div></div></div>
+                    <div className="absolute top-6 left-6 z-20"><button onClick={onBack} className="p-3 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-white"><Icon name="ArrowLeft" className="w-6 h-6"/></button></div>
+                    <div className="absolute top-6 right-6 z-20"><div className="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 border-rose-500/30"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span className="text-[10px] font-mono text-rose-400 font-bold">LIVE SCAN</span></div></div>
+                    <div className={`absolute bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${isExpanded ? 'translate-y-0' : 'translate-y-[calc(100%-85px)]'}`}><div className="glass-card rounded-t-[2rem] border-t border-white/10 shadow-2xl"><div className="p-6 flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}><div className="flex items-center gap-4"><div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Users" className="w-6 h-6"/></div><div><h3 className="text-base font-bold text-white uppercase tracking-wide">Guardians</h3><p className="text-[10px] text-emerald-400 font-mono tracking-wider">3 ACTIVE • ALL SECURE</p></div></div><Icon name="ChevronRight" className={`w-5 h-5 text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : '-rotate-90'}`}/></div><div className="p-6 pt-0 grid grid-cols-3 gap-3 pb-10">{['Dad', 'Sister', 'Rahul'].map((n, i) => (<div key={i} className="bg-white/5 rounded-2xl p-3 flex flex-col items-center gap-2 border border-white/5"><div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold border border-white/10 text-white">{n[0]}</div><span className="text-[10px] font-bold text-slate-300 uppercase">{n}</span></div>))}</div></div></div>
                 </div>
             );
         };
 
-        const ProtocolView = ({ onBack, triggerFakeCall, setSiren }) => (
+        const ProtocolView = ({ onBack }) => (
             <div className="px-6 pt-8 pb-12 h-full overflow-y-auto">
                 <div className="flex items-center gap-4 mb-8"><button onClick={onBack}><Icon name="ArrowLeft" className="w-6 h-6 text-white"/></button><h2 className="text-2xl font-bold text-white uppercase tracking-tight">Tactical Modules</h2></div>
-                <div className="grid grid-cols-2 gap-4">
-                    <div onClick={triggerFakeCall} className="glass-card p-6 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10 cursor-pointer">
-                        <div className="flex justify-between items-start"><div className="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center text-purple-400"><Icon name="Phone" className="w-6 h-6" /></div></div>
-                        <div><h3 className="font-bold text-white text-lg leading-none mb-1">Fake Call</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Disguise</p></div>
-                    </div>
-                    <div className="glass-card p-6 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10">
-                        <div className="flex justify-between items-start"><div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Map" className="w-6 h-6" /></div></div>
-                        <div><h3 className="font-bold text-white text-lg leading-none mb-1">Safe Route</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Navigation</p></div>
-                    </div>
-                    <div className="glass-card p-6 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10">
-                         <div className="flex justify-between items-start"><div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-400"><Icon name="Siren" className="w-6 h-6" /></div></div>
-                        <div><h3 className="font-bold text-white text-lg leading-none mb-1">Siren</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Deterrent</p></div>
-                    </div>
-                    <div className="glass-card p-6 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10">
-                         <div className="flex justify-between items-start"><div className="w-12 h-12 rounded-2xl bg-cyan-500/10 flex items-center justify-center text-cyan-400"><Icon name="Share" className="w-6 h-6" /></div></div>
-                        <div><h3 className="font-bold text-white text-lg leading-none mb-1">Share</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Location</p></div>
-                    </div>
-                </div>
+                <div className="grid grid-cols-2 gap-4">{[ {t:"Fake Call", d:"Disguise", i:"Phone", c:"purple"}, {t:"Safe Route", d:"Navigation", i:"Map", c:"emerald"}, {t:"Siren", d:"Deterrent", i:"Siren", c:"rose"}, {t:"Share", d:"Location", i:"Share", c:"cyan"} ].map((m, i) => (<div key={i} className="glass-card p-6 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10"><div className="flex justify-between items-start"><div className={`w-12 h-12 rounded-2xl bg-${m.c}-500/10 flex items-center justify-center text-${m.c}-400`}><Icon name={m.i} className="w-6 h-6" /></div></div><div><h3 className="font-bold text-white text-lg leading-none mb-1">{m.t}</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">{m.d}</p></div></div>))}</div>
             </div>
         );
 
         const LegalView = ({ onBack }) => {
             const [msgs, setMsgs] = useState([{id:1, text:"Raksha Secure Channel. State your emergency.", sender:'bot'}]);
             const [txt, setTxt] = useState("");
-            const send = () => { if(!txt) return; setMsgs(p => [...p, {id: Date.now(), text:txt, sender:'user'}]); setTxt(""); setTimeout(() => setMsgs(p => [...p, {id:Date.now()+1, text:"Acknowledged. Recording evidence.", sender:'bot'}]), 800); };
+            const send = () => { if(!txt) return; setMsgs(p => [...p, {id: Date.now(), text:txt, sender:'user'}]); setTxt(""); setTimeout(() => setMsgs(p => [...p, {id:Date.now()+1, text:"Acknowledged.", sender:'bot'}]), 800); };
             return (
                 <div className="h-full flex flex-col px-6 pt-8 pb-6">
                     <div className="flex items-center gap-4 mb-8"><button onClick={onBack}><Icon name="ArrowLeft" className="w-6 h-6 text-white"/></button><h2 className="text-2xl font-bold text-white uppercase tracking-tight">Legal Terminal</h2></div>
@@ -563,19 +319,14 @@
             const [view, setView] = useState('home');
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [deferredPrompt, setDeferredPrompt] = useState(null);
-            
-            const [isFakeCalling, setIsFakeCalling] = useState(false);
+            const [isLocal, setIsLocal] = useState(false);
 
             useEffect(() => { 
+                if (window.location.protocol === 'file:') setIsLocal(true);
                 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setDeferredPrompt(e); }); 
             }, []);
             
             const installApp = () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choice) => { if (choice.outcome === 'accepted') setDeferredPrompt(null); }); } else alert("Open browser menu and select 'Add to Home Screen'"); setMobileMenuOpen(false); };
-
-            const triggerFakeCall = () => {
-                setView('home'); 
-                setTimeout(() => setIsFakeCalling(true), 5000);
-            }
 
             if (loading) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#000000] text-rose-500 gap-4"><Icon name="Loading" className="w-12 h-12 animate-spin text-rose-500" /><p className="font-mono text-xs tracking-widest animate-pulse">SYSTEM INITIALIZING...</p></div>;
             if (!user) return <AuthScreen signIn={signIn} signUp={signUp} error={error} loading={loading} setError={setError} />;
@@ -583,10 +334,6 @@
             return (
                 <div className="h-screen w-full relative font-sans text-slate-200">
                     <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#000000]"><div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[100px] animate-float"></div><div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[100px] animate-float" style={{animationDelay:'2s'}}></div><div className="absolute inset-0 grid-bg opacity-20"></div></div>
-                    
-                    {/* Fake Call Overlay */}
-                    {isFakeCalling && <FakeCallScreen onEnd={() => setIsFakeCalling(false)} />}
-
                     <nav className="fixed top-0 left-0 w-full z-50 p-4">
                         <div className="glass-panel rounded-full px-5 py-3 flex justify-between items-center relative shadow-2xl">
                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('home')}><div className="bg-rose-600 p-1.5 rounded-lg shadow-lg shadow-rose-600/20"><Icon name="Shield" className="w-5 h-5 text-white" /></div><span className="font-bold text-white tracking-tight text-lg">RAKSHA</span></div>
@@ -602,9 +349,9 @@
                         </div>
                     </nav>
                     <main className="h-full w-full pt-20">
-                        {view === 'home' && <HomeView user={user} setView={setView} triggerFakeCall={triggerFakeCall} />}
-                        {view === 'map' && <MapView onBack={() => setView('home')} user={user} />}
-                        {view === 'protocol' && <ProtocolView onBack={() => setView('home')} triggerFakeCall={triggerFakeCall} />}
+                        {view === 'home' && <HomeView user={user} setView={setView} />}
+                        {view === 'map' && <MapView onBack={() => setView('home')} />}
+                        {view === 'protocol' && <ProtocolView onBack={() => setView('home')} />}
                         {view === 'legal' && <LegalView onBack={() => setView('home')} />}
                     </main>
                 </div>
