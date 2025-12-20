@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Raksha Sentinel</title>
+    <title>Raksha X - Sentinel</title>
     
-    <!-- PWA Configuration - URL Encoded for Reliability -->
-    <link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22Raksha%20Sentinel%22%2C%22short_name%22%3A%22Raksha%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23000510%22%2C%22theme_color%22%3A%22%23000510%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F2555%2F2555572.png%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fpng%22%7D%5D%7D">
+    <!-- PWA Manifest - Updated Name for Cache Busting -->
+    <link rel="manifest" id="manifest-placeholder">
     
-    <!-- iOS Specific Meta Tags for Full Screen -->
+    <!-- iOS Meta -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Raksha">
+    <meta name="apple-mobile-web-app-title" content="Raksha X">
 
     <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -23,40 +23,33 @@
 
     <!-- Config -->
     <script>
+        // --- MANIFEST INJECTION ---
+        const manifest = {
+            name: "Raksha X",
+            short_name: "Raksha X",
+            start_url: ".",
+            display: "standalone",
+            background_color: "#000510",
+            theme_color: "#f43f5e",
+            orientation: "portrait",
+            icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2555/2555572.png", sizes: "192x192", type: "image/png" }]
+        };
+        const stringManifest = JSON.stringify(manifest);
+        const manifestBlob = new Blob([stringManifest], {type: 'application/json'});
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.querySelector('#manifest-placeholder').setAttribute('href', manifestURL);
+
+        // --- TAILWIND CONFIG ---
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['"Rajdhani"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
-                    },
-                    colors: {
-                        cyber: {
-                            bg: '#000510',
-                            glass: 'rgba(10, 15, 30, 0.7)',
-                            border: 'rgba(255, 255, 255, 0.1)',
-                            primary: '#f43f5e',
-                            accent: '#06b6d4'
-                        }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'radar': 'radar 4s linear infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
+                    fontFamily: { sans: ['"Rajdhani"', 'sans-serif'], mono: ['"JetBrains Mono"', 'monospace'] },
+                    colors: { cyber: { bg: '#000510', glass: 'rgba(10, 15, 30, 0.7)', primary: '#f43f5e', accent: '#06b6d4' } },
+                    animation: { 'pulse-glow': 'pulse-glow 2s infinite', 'radar': 'radar 4s linear infinite', 'float': 'float 6s ease-in-out infinite' },
                     keyframes: {
-                        'pulse-glow': {
-                            '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(244, 63, 94, 0.5)' },
-                            '50%': { opacity: .8, boxShadow: '0 0 40px rgba(244, 63, 94, 0.8)' }
-                        },
-                        'radar': {
-                            '0%': { transform: 'rotate(0deg)' },
-                            '100%': { transform: 'rotate(360deg)' }
-                        },
-                        'float': {
-                            '0%, 100%': { transform: 'translateY(0)' },
-                            '50%': { transform: 'translateY(-6px)' }
-                        }
+                        'pulse-glow': { '0%, 100%': { boxShadow: '0 0 20px rgba(244, 63, 94, 0.5)' }, '50%': { boxShadow: '0 0 40px rgba(244, 63, 94, 0.8)' } },
+                        'radar': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } },
+                        'float': { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-6px)' } }
                     }
                 }
             }
@@ -64,63 +57,23 @@
     </script>
 
     <style>
-        body { 
-            background-color: #000510; 
-            color: #e2e8f0; 
-            overflow: hidden; 
-            -webkit-tap-highlight-color: transparent; 
-            touch-action: manipulation;
-            overscroll-behavior: none;
-        }
+        body { background-color: #000510; color: #e2e8f0; overflow: hidden; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
         
-        .glass-panel {
-            background: rgba(13, 18, 30, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
-        }
+        .glass-panel { background: rgba(13, 18, 30, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2); }
+        .glass-card { background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5); }
         
-        .glass-card {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-        }
-
-        .reactor-container { position: relative; width: 200px; height: 200px; display: flex; justify-content: center; align-items: center; }
-        .reactor-core {
-            width: 140px; height: 140px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fb7185, #e11d48);
-            box-shadow: 0 0 50px rgba(225, 29, 72, 0.5), inset 0 0 20px rgba(255,255,255,0.3);
-            position: relative; z-index: 10;
-            display: flex; justify-content: center; align-items: center;
-            transition: all 0.3s ease;
-        }
+        .reactor-core { width: 140px; height: 140px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #fb7185, #e11d48); box-shadow: 0 0 50px rgba(225, 29, 72, 0.5), inset 0 0 20px rgba(255,255,255,0.3); position: relative; z-index: 10; display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
         .reactor-core:active { transform: scale(0.92); }
+        .reactor-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(244, 63, 94, 0.3); animation: radar 8s linear infinite; }
+        .r1 { width: 180px; height: 180px; border-top-color: #f43f5e; animation-duration: 6s; }
+        .r2 { width: 220px; height: 220px; border-left-color: #f43f5e; animation-duration: 10s; animation-direction: reverse; opacity: 0.6; }
         
-        .reactor-ring {
-            position: absolute; border-radius: 50%; border: 1px solid rgba(244, 63, 94, 0.3);
-            animation: radar 8s linear infinite;
-        }
-        .r1 { width: 100%; height: 100%; border-top-color: #f43f5e; animation-duration: 6s; }
-        .r2 { width: 120%; height: 120%; border-left-color: #f43f5e; animation-duration: 10s; animation-direction: reverse; opacity: 0.6; }
-        
-        ::-webkit-scrollbar { width: 3px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-        .pb-safe { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
-        
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-        }
-        
+        .grid-bg { background-image: linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px); background-size: 30px 30px; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        .pb-safe { padding-bottom: calc(2rem + env(safe-area-inset-bottom)); }
     </style>
 </head>
 <body>
@@ -129,7 +82,21 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        // --- SUPABASE CONFIG ---
+        // --- SERVICE WORKER REGISTRATION (BLOB TRICK) ---
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                self.addEventListener('install', (e) => e.waitUntil(self.skipWaiting()));
+                self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
+                self.addEventListener('fetch', (e) => {});
+            `;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            const swUrl = URL.createObjectURL(swBlob);
+            navigator.serviceWorker.register(swUrl)
+                .then(reg => console.log('SW Registered', reg))
+                .catch(err => console.log('SW Error', err));
+        }
+
+        // --- SUPABASE ---
         const SUPABASE_URL = 'https://onpwkocasxwimhubimny.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ucHdrb2Nhc3h3aW1odWJpbW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTQ4MTUsImV4cCI6MjA3OTU3MDgxNX0.fnYZfulWBgNUKVD8SmF_hi0lMoXG-hbQlb0bBNl2Mg4';
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -153,6 +120,7 @@
                 LogOut: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
                 X: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>,
                 ChevronRight: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9 18 15 12 9 6"/></svg>,
+                ArrowLeft: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>,
                 Battery: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="1" y="6" width="18" height="12" rx="2" ry="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>,
                 Loading: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>,
                 AlertTriangle: (p) => <svg {...p} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>,
@@ -171,17 +139,11 @@
 
             useEffect(() => {
                 supabase.auth.getSession().then(({ data: { session } }) => {
-                    setSession(session);
-                    setUser(session?.user ?? null);
-                    setLoading(false);
+                    setSession(session); setUser(session?.user ?? null); setLoading(false);
                 });
-
                 const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-                    setSession(session);
-                    setUser(session?.user ?? null);
-                    setLoading(false);
+                    setSession(session); setUser(session?.user ?? null); setLoading(false);
                 });
-
                 return () => subscription.unsubscribe();
             }, []);
 
@@ -199,10 +161,7 @@
                 setLoading(false);
             };
 
-            const signOut = async () => {
-                await supabase.auth.signOut();
-            };
-
+            const signOut = async () => { await supabase.auth.signOut(); };
             return { user, loading, error, setError, signIn, signUp, signOut };
         }
 
@@ -219,16 +178,9 @@
                         <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-rose-600 to-rose-800 flex items-center justify-center shadow-[0_0_40px_rgba(244,63,94,0.4)] mb-6 border border-white/10">
                             <Icon name="Shield" className="w-10 h-10 text-white" />
                         </div>
-                        <h1 className="text-3xl font-black text-white mb-1 tracking-tight italic">RAKSHA</h1>
+                        <h1 className="text-3xl font-black text-white mb-1 tracking-tight italic">RAKSHA X</h1>
                         <p className="text-slate-400 text-xs mb-8 font-mono tracking-widest uppercase">{isLogin ? 'SECURE LOGIN' : 'NEW OPERATOR'}</p>
-
-                        {error && (
-                            <div className="w-full bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 mb-6 flex items-start gap-3">
-                                <Icon name="AlertTriangle" className="w-5 h-5 text-rose-500 shrink-0" />
-                                <span className="text-xs text-rose-300 font-mono">{error}</span>
-                            </div>
-                        )}
-
+                        {error && <div className="w-full bg-rose-500/10 border border-rose-500/30 rounded-xl p-3 mb-6 flex items-start gap-3"><Icon name="AlertTriangle" className="w-5 h-5 text-rose-500 shrink-0" /><span className="text-xs text-rose-300 font-mono">{error}</span></div>}
                         <form onSubmit={(e) => { e.preventDefault(); isLogin ? signIn(email, password) : signUp(email, password); }} className="w-full space-y-4">
                             <div className="relative"><input type="email" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" placeholder="email@secure.net" value={email} onChange={(e) => setEmail(e.target.value)} /><Icon name="Users" className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" /></div>
                             <div className="relative"><input type="password" required className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pl-10 text-white text-sm focus:border-rose-500 focus:bg-white/10 outline-none transition-all font-mono" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} /><Icon name="Lock" className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" /></div>
@@ -278,74 +230,87 @@
         );
 
         // --- VIEWS ---
-        const HomeView = ({ user }) => (
-            <div className="px-6 pt-8 pb-32 h-full flex flex-col overflow-y-auto">
-                <div className="flex justify-between items-start mb-6">
-                    <div><div className="text-[10px] font-mono text-cyan-400 mb-1 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>SECURE UPLINK: ACTIVE</div><h1 className="text-3xl font-bold text-white uppercase tracking-tight">COMMAND <span className="text-rose-500 neon-text-rose">CENTER</span></h1></div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-600 to-purple-700 flex items-center justify-center font-bold text-white border border-white/10 shadow-lg">{user.email.charAt(0).toUpperCase()}</div>
-                </div>
-                <div className="grid grid-cols-3 gap-3 mb-6"><StatusBadge label="Threat" value="LOW" color="emerald" /><StatusBadge label="Signal" value="5G+" color="cyan" /><StatusBadge label="Battery" value="98%" color="emerald" /></div>
-                <div className="flex-1 flex flex-col justify-center items-center py-4"><div className="absolute w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/20 to-transparent top-1/2 -z-10"></div><SOSButton /></div>
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                    <QuickAction icon="Zap" label="Siren" color="rose" onClick={() => {}} />
-                    <QuickAction icon="Eye" label="Stealth" color="purple" onClick={() => {}} />
-                    <div className="col-span-2 glass-panel p-3 rounded-2xl flex items-center justify-between px-6 border border-white/5 active:scale-95 transition-transform" onClick={() => alert("Location Shared")}><div className="flex items-center gap-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400"><Icon name="Share" className="w-5 h-5" /></div><div className="flex flex-col text-left"><span className="text-sm font-bold text-white uppercase">Share Location</span><span className="text-[10px] text-slate-400">Trusted Contacts Only</span></div></div><Icon name="ChevronRight" className="w-4 h-4 text-slate-500" /></div>
-                </div>
-            </div>
-        );
+        const HomeView = ({ user, setView }) => {
+            const [siren, setSiren] = useState(false);
+            const handleSOS = () => { if(navigator.vibrate) navigator.vibrate([500,200,500]); alert("SOS SIGNAL BROADCASTED"); };
+            
+            return (
+                <div className="px-6 pt-8 pb-12 h-full flex flex-col overflow-y-auto">
+                    <div className="flex justify-between items-start mb-6">
+                        <div><div className="text-[10px] font-mono text-cyan-400 mb-1 flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>SECURE UPLINK: ACTIVE</div><h1 className="text-3xl font-bold text-white uppercase tracking-tight">COMMAND <span className="text-rose-500 neon-text-rose">CENTER</span></h1></div>
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-rose-600 to-purple-700 flex items-center justify-center font-bold text-white border border-white/10 shadow-lg">{user.email.charAt(0).toUpperCase()}</div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 mb-6">
+                        <div className="glass-panel p-3 rounded-xl flex flex-col items-center justify-center border border-white/5"><span className="text-emerald-400 font-bold text-lg font-mono">LOW</span><span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">THREAT</span></div>
+                        <div className="glass-panel p-3 rounded-xl flex flex-col items-center justify-center border border-white/5"><span className="text-cyan-400 font-bold text-lg font-mono">5G+</span><span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">SIGNAL</span></div>
+                        <div className="glass-panel p-3 rounded-xl flex flex-col items-center justify-center border border-white/5"><span className="text-emerald-400 font-bold text-lg font-mono">98%</span><span className="text-[9px] text-slate-500 uppercase tracking-widest mt-1">BATTERY</span></div>
+                    </div>
+                    
+                    <div className="flex-1 flex flex-col justify-center items-center py-6">
+                        <div className="reactor-container relative">
+                            <div className="reactor-ring r1"></div><div className="reactor-ring r2"></div>
+                            <button onClick={handleSOS} className="reactor-core animate-pulse"><div className="flex flex-col items-center text-white z-20"><Icon name="Siren" className="w-10 h-10 mb-1 drop-shadow-lg" /><span className="text-3xl font-black tracking-widest drop-shadow-md">SOS</span></div></button>
+                        </div>
+                        <div className="mt-6 text-rose-500 font-mono text-[10px] uppercase tracking-[0.3em] font-bold animate-pulse">SYSTEM ARMED</div>
+                    </div>
 
-        const MapView = () => {
-            const [viewMode, setViewMode] = useState('Tactical');
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                        <button onClick={() => setSiren(!siren)} className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-transform border border-white/5 hover:border-white/10 group"><div className="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform"><Icon name="Zap" className="w-6 h-6" /></div><span className="text-xs font-bold uppercase tracking-wider text-slate-300">Siren</span></button>
+                        <button className="glass-panel p-4 rounded-2xl flex flex-col items-center gap-3 active:scale-95 transition-transform border border-white/5 hover:border-white/10 group"><div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-400 group-hover:scale-110 transition-transform"><Icon name="Eye" className="w-6 h-6" /></div><span className="text-xs font-bold uppercase tracking-wider text-slate-300">Stealth</span></button>
+                        <div className="col-span-2 glass-panel p-3 rounded-2xl flex items-center justify-between px-6 border border-white/5 active:scale-95 transition-transform"><div className="flex items-center gap-4"><div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400"><Icon name="Share" className="w-5 h-5" /></div><div className="flex flex-col text-left"><span className="text-sm font-bold text-white uppercase">Location</span><span className="text-[10px] text-slate-400">Share with Guardians</span></div></div><Icon name="Users" className="w-4 h-4 text-slate-500" /></div>
+                        
+                        {/* Direct Navigation Buttons on Dashboard */}
+                        <button onClick={() => setView('map')} className="col-span-2 glass-panel p-4 rounded-2xl flex items-center justify-between px-6 border border-white/5 active:scale-95 transition-transform group mt-2"><div className="flex items-center gap-4"><div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Map" className="w-5 h-5" /></div><span className="text-sm font-bold text-white uppercase">Open Global Map</span></div><Icon name="ChevronRight" className="w-4 h-4 text-slate-500 group-hover:translate-x-1 transition-transform" /></button>
+                    </div>
+                </div>
+            );
+        };
+
+        const MapView = ({ onBack }) => {
             const [isExpanded, setIsExpanded] = useState(false);
             return (
-                <div className="h-screen w-full relative bg-[#000510] overflow-hidden flex flex-col">
+                <div className="h-full w-full relative bg-[#000510] overflow-hidden flex flex-col">
                     <div className="absolute inset-0"><div className="absolute inset-0 grid-bg opacity-30"></div><div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20"><div className="w-[600px] h-[600px] border border-cyan-500/20 rounded-full"></div><div className="w-[300px] h-[300px] bg-gradient-to-t from-cyan-500/20 to-transparent rounded-full animate-[radar_4s_linear_infinite] origin-center"></div></div><div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center"><div className="w-4 h-4 bg-rose-500 rounded-full border-2 border-white shadow-[0_0_20px_#f43f5e] animate-pulse"></div><div className="w-24 h-24 bg-rose-500/10 rounded-full absolute animate-ping"></div></div></div>
-                    <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20"><div><h2 className="text-xl font-bold text-white uppercase tracking-tight flex items-center gap-2"><Icon name="Crosshair" className="w-5 h-5 text-rose-500"/> GLOBAL INTEL</h2><div className="flex gap-2 mt-2">{['Tactical', 'Satellite'].map(m => (<button key={m} onClick={()=>setViewMode(m)} className={`text-[10px] uppercase font-bold px-3 py-1 rounded border transition-colors ${viewMode === m ? 'bg-cyan-500/20 border-cyan-500 text-cyan-400' : 'bg-black/40 border-white/10 text-slate-500'}`}>{m}</button>))}</div></div><div className="glass-panel px-3 py-1 rounded-lg flex items-center gap-2 border-rose-500/30"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span className="text-[10px] font-mono text-rose-400">SCANNING...</span></div></div>
+                    <div className="absolute top-4 left-6 z-20"><button onClick={onBack} className="p-2 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-white"><Icon name="ArrowLeft" className="w-6 h-6"/></button></div>
+                    <div className="absolute top-6 right-6 z-20"><div className="glass-panel px-3 py-1 rounded-lg flex items-center gap-2 border-rose-500/30"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span className="text-[10px] font-mono text-rose-400">LIVE SCAN</span></div></div>
                     
-                    {/* Collapsible Trusted Circle Panel - CLEAN & ISOLATED */}
-                    <div className={`absolute bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${isExpanded ? 'translate-y-0' : 'translate-y-[calc(100%-80px)]'}`}>
+                    {/* Collapsible Trusted Circle */}
+                    <div className={`absolute bottom-0 left-0 right-0 z-30 transition-transform duration-300 ${isExpanded ? 'translate-y-0' : 'translate-y-[calc(100%-70px)]'}`}>
                         <div className="glass-card rounded-t-3xl border-t border-white/10 shadow-2xl">
-                            <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                                <div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Users" className="w-5 h-5"/></div><div><h3 className="text-sm font-bold text-white uppercase tracking-wide">Trusted Guardians</h3><p className="text-[10px] text-emerald-400 font-mono">3 ACTIVE • ALL SECURE</p></div></div>
-                                <Icon name="ChevronRight" className={`w-5 h-5 text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : '-rotate-90'}`}/>
-                            </div>
-                            <div className="p-4 pt-0 grid grid-cols-1 gap-3 pb-8">
-                                {['Dad', 'Sister', 'Rahul'].map((n, i) => (
-                                    <div key={i} className="bg-white/5 rounded-xl p-3 flex items-center justify-between border border-white/5"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-xs font-bold border border-white/10">{n[0]}</div><span className="text-sm font-medium text-slate-200">{n}</span></div><span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded">ONLINE</span></div>
-                                ))}
-                            </div>
+                            <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}><div className="flex items-center gap-3"><div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-400"><Icon name="Users" className="w-5 h-5"/></div><div><h3 className="text-sm font-bold text-white uppercase tracking-wide">Guardians</h3><p className="text-[10px] text-emerald-400 font-mono">3 ACTIVE</p></div></div><Icon name="ChevronRight" className={`w-5 h-5 text-slate-500 transition-transform ${isExpanded ? 'rotate-90' : '-rotate-90'}`}/></div>
+                            <div className="p-4 pt-0 grid grid-cols-3 gap-2 pb-8">{['Dad', 'Sister', 'Rahul'].map((n, i) => (<div key={i} className="bg-white/5 rounded-xl p-2 flex flex-col items-center gap-1 border border-white/5"><div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold border border-white/10">{n[0]}</div><span className="text-[10px] font-medium text-slate-300">{n}</span></div>))}</div>
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const ProtocolView = () => (
+        const ProtocolView = ({ onBack }) => (
             <div className="px-6 pt-8 pb-12 h-full overflow-y-auto">
-                <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-tight flex items-center gap-3"><Icon name="Grid" className="w-6 h-6 text-rose-500"/> Tactical Modules</h2>
+                <div className="flex items-center gap-4 mb-6"><button onClick={onBack}><Icon name="ArrowLeft" className="w-6 h-6 text-white"/></button><h2 className="text-2xl font-bold text-white uppercase tracking-tight">Tactical Modules</h2></div>
                 <div className="grid grid-cols-2 gap-4">
                     {[ {t:"Fake Call", d:"Disguise", i:"Phone", c:"purple"}, {t:"Safe Route", d:"Navigation", i:"Map", c:"emerald"}, {t:"Siren", d:"Deterrent", i:"Siren", c:"rose"}, {t:"Share", d:"Location", i:"Share", c:"cyan"} ].map((m, i) => (
-                        <div key={i} className="glass-card p-5 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10"><div className="flex justify-between items-start"><div className={`w-10 h-10 rounded-xl bg-${m.c}-500/10 flex items-center justify-center text-${m.c}-400 group-hover:scale-110 transition-transform shadow-[0_0_15px_rgba(0,0,0,0.3)]`}><Icon name={m.i} className="w-5 h-5" /></div><div className={`w-1.5 h-1.5 rounded-full bg-${m.c}-500 shadow-[0_0_5px_currentColor]`}></div></div><div><h3 className="font-bold text-white text-lg leading-none mb-1">{m.t}</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">{m.d}</p></div></div>
+                        <div key={i} className="glass-card p-5 rounded-3xl flex flex-col gap-4 active:scale-95 transition-transform group border border-white/5 hover:border-white/10"><div className="flex justify-between items-start"><div className={`w-10 h-10 rounded-xl bg-${m.c}-500/10 flex items-center justify-center text-${m.c}-400`}><Icon name={m.i} className="w-5 h-5" /></div></div><div><h3 className="font-bold text-white text-lg leading-none mb-1">{m.t}</h3><p className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">{m.d}</p></div></div>
                     ))}
                 </div>
             </div>
         );
 
-        const LegalView = () => {
+        const LegalView = ({ onBack }) => {
             const [msgs, setMsgs] = useState([{id:1, text:"Raksha Secure Channel. State your emergency.", sender:'bot'}]);
             const [txt, setTxt] = useState("");
-            const send = () => { if(!txt) return; setMsgs(p => [...p, {id: Date.now(), text:txt, sender:'user'}]); setTxt(""); setTimeout(() => setMsgs(p => [...p, {id:Date.now()+1, text:"Acknowledged. Protocol initiated.", sender:'bot'}]), 800); };
+            const send = () => { if(!txt) return; setMsgs(p => [...p, {id: Date.now(), text:txt, sender:'user'}]); setTxt(""); setTimeout(() => setMsgs(p => [...p, {id:Date.now()+1, text:"Acknowledged.", sender:'bot'}]), 800); };
             return (
                 <div className="h-full flex flex-col px-6 pt-8 pb-6">
-                    <h2 className="text-2xl font-bold text-white mb-6 uppercase tracking-tight flex items-center gap-3"><Icon name="FileText" className="w-6 h-6 text-rose-500"/> Legal Terminal</h2>
+                    <div className="flex items-center gap-4 mb-6"><button onClick={onBack}><Icon name="ArrowLeft" className="w-6 h-6 text-white"/></button><h2 className="text-2xl font-bold text-white uppercase tracking-tight">Legal Terminal</h2></div>
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                        <button className="glass-panel p-4 rounded-2xl border-l-4 border-rose-500 text-left relative overflow-hidden group"><div className="text-rose-400 font-black text-3xl mb-1 group-active:scale-95 transition-transform">100</div><div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Police</div></button>
-                        <button className="glass-panel p-4 rounded-2xl border-l-4 border-purple-500 text-left relative overflow-hidden group"><div className="text-purple-400 font-black text-3xl mb-1 group-active:scale-95 transition-transform">1091</div><div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Helpline</div></button>
+                        <button className="glass-panel p-4 rounded-2xl border-l-4 border-rose-500 text-left"><div className="text-rose-400 font-black text-3xl mb-1">100</div><div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Police</div></button>
+                        <button className="glass-panel p-4 rounded-2xl border-l-4 border-purple-500 text-left"><div className="text-purple-400 font-black text-3xl mb-1">1091</div><div className="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Helpline</div></button>
                     </div>
                     <div className="flex-1 glass-card rounded-3xl flex flex-col overflow-hidden border border-white/10 mb-4">
-                        <div className="p-3 bg-white/5 border-b border-white/5 text-[10px] font-mono text-cyan-400 uppercase tracking-widest flex justify-between items-center"><span>AI LEGAL ASSISTANT v2.0</span><span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span></div>
+                        <div className="p-3 bg-white/5 border-b border-white/5 text-[10px] font-mono text-cyan-400 uppercase tracking-widest">AI LEGAL ASSISTANT v2.0</div>
                         <div className="flex-1 p-4 overflow-y-auto space-y-4">{msgs.map(m => (<div key={m.id} className={`flex ${m.sender==='user'?'justify-end':'justify-start'}`}><div className={`max-w-[85%] p-3 rounded-2xl text-sm ${m.sender==='user'?'bg-rose-600 text-white rounded-tr-sm':'bg-white/10 text-slate-300 rounded-tl-sm border border-white/5'}`}>{m.text}</div></div>))}</div>
-                        <div className="p-3 border-t border-white/5 flex gap-2 bg-black/20"><input className="flex-1 bg-transparent border-none outline-none text-white text-sm font-mono placeholder-slate-600" placeholder="TYPE QUERY..." value={txt} onChange={e => setTxt(e.target.value)} /><button onClick={send} className="text-cyan-400 p-2 hover:bg-white/5 rounded-lg transition-colors"><Icon name="Send" className="w-5 h-5"/></button></div>
+                        <div className="p-3 border-t border-white/5 flex gap-2 bg-black/20"><input className="flex-1 bg-transparent border-none outline-none text-white text-sm font-mono" placeholder="Query..." value={txt} onChange={e => setTxt(e.target.value)} /><button onClick={send} className="text-cyan-400"><Icon name="Send" className="w-5 h-5"/></button></div>
                     </div>
                 </div>
             );
@@ -354,46 +319,39 @@
         const App = () => {
             const { user, loading, error, setError, signIn, signUp, signOut } = useSupabaseAuth();
             const [view, setView] = useState('home');
-            const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [menuOpen, setMenuOpen] = useState(false);
             const [deferredPrompt, setDeferredPrompt] = useState(null);
 
-            useEffect(() => {
-                window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setDeferredPrompt(e); });
-            }, []);
-
-            const installApp = () => {
-                if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choice) => { if (choice.outcome === 'accepted') setDeferredPrompt(null); }); }
-                else alert("Install not available directly. Use 'Add to Home Screen' in browser menu.");
-                setMobileMenuOpen(false);
-            };
+            useEffect(() => { window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); setDeferredPrompt(e); }); }, []);
+            const installApp = () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choice) => { if (choice.outcome === 'accepted') setDeferredPrompt(null); }); } else alert("Open browser menu and select 'Add to Home Screen'"); setMenuOpen(false); };
 
             if (loading) return <div className="h-screen w-full flex flex-col items-center justify-center bg-[#000510] text-rose-500 gap-4"><Icon name="Loading" className="w-12 h-12 animate-spin text-rose-500" /><p className="font-mono text-xs tracking-widest animate-pulse">SYSTEM INITIALIZING...</p></div>;
             if (!user) return <AuthScreen signIn={signIn} signUp={signUp} error={error} loading={loading} setError={setError} />;
 
-            const navLinks = [ { id: 'home', label: 'Command' }, { id: 'protocol', label: 'Modules' }, { id: 'map', label: 'Global Map' }, { id: 'legal', label: 'Legal' } ];
-
             return (
                 <div className="h-screen w-full relative font-sans text-slate-200">
                     <div className="fixed inset-0 z-[-1] pointer-events-none bg-[#000510]"><div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-rose-600/10 rounded-full blur-[100px] animate-float"></div><div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-cyan-600/10 rounded-full blur-[100px] animate-float" style={{animationDelay:'2s'}}></div><div className="absolute inset-0 grid-bg opacity-20"></div></div>
-                    <nav className="fixed top-0 left-0 w-full z-50 p-4">
-                        <div className="glass-panel rounded-2xl px-4 py-3 flex justify-between items-center relative shadow-lg">
-                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('home')}><div className="bg-rose-600 p-1.5 rounded-lg shadow-lg shadow-rose-600/20"><Icon name="Shield" className="w-5 h-5 text-white" /></div><span className="font-black text-white tracking-tighter text-lg">RAKSHA</span></div>
-                            <button className="p-2 rounded-full hover:bg-white/10 text-white transition-colors relative z-50" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>{mobileMenuOpen ? <Icon name="X" className="w-6 h-6" /> : <Icon name="MoreVertical" className="w-6 h-6" />}</button>
-                            {mobileMenuOpen && (
-                                <div className="absolute top-full right-0 mt-2 w-64 bg-[#0a0a15]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 animate-fade-in z-[60] origin-top-right">
-                                    {navLinks.map(link => (<button key={link.id} onClick={() => { setView(link.id); setMobileMenuOpen(false); }} className={`text-left px-4 py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-between group ${view === link.id ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/20' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>{link.label} {view === link.id && <span className="w-1.5 h-1.5 bg-white rounded-full"></span>}</button>))}
-                                    <div className="h-px bg-white/10 my-1"></div>
-                                    <button onClick={installApp} className="text-left px-4 py-3 rounded-xl text-sm font-bold text-emerald-400 hover:bg-emerald-500/10 transition-all flex items-center gap-2"><Icon name="Download" className="w-4 h-4" /> Install App</button>
-                                    <button onClick={() => { signOut(); setMobileMenuOpen(false); }} className="text-left px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 transition-all flex items-center gap-2"><Icon name="LogOut" className="w-4 h-4" /> Sign Out</button>
-                                </div>
-                            )}
+                    
+                    {/* Top Right Menu Button (Always visible) */}
+                    <div className="fixed top-6 right-6 z-50">
+                        <button className="p-3 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-white shadow-lg" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <Icon name="X" className="w-6 h-6"/> : <Icon name="MoreVertical" className="w-6 h-6"/>}</button>
+                    </div>
+
+                    {/* Menu Dropdown */}
+                    {menuOpen && (
+                        <div className="fixed top-20 right-6 w-64 bg-[#0a0a15]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl p-2 flex flex-col gap-1 animate-fade-in z-[60]">
+                            {['home', 'protocol', 'map', 'legal'].map(id => (<button key={id} onClick={() => { setView(id); setMenuOpen(false); }} className={`text-left px-4 py-3 rounded-xl text-sm font-bold uppercase ${view === id ? 'bg-rose-600 text-white' : 'text-slate-300 hover:bg-white/5'}`}>{id}</button>))}
+                            <div className="h-px bg-white/10 my-1"></div>
+                            <button onClick={installApp} className="text-left px-4 py-3 rounded-xl text-sm font-bold text-emerald-400 hover:bg-emerald-500/10 flex items-center gap-2"><Icon name="Download" className="w-4 h-4" /> Install App</button>
+                            <button onClick={() => { signOut(); setMenuOpen(false); }} className="text-left px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-500/10 flex items-center gap-2"><Icon name="LogOut" className="w-4 h-4" /> Sign Out</button>
                         </div>
-                    </nav>
-                    <main className="h-full w-full pt-20">
-                        {view === 'home' && <HomeView user={user} />}
-                        {view === 'map' && <MapView />}
-                        {view === 'protocol' && <ProtocolView />}
-                        {view === 'legal' && <LegalView />}
+                    )}
+
+                    <main className="h-full w-full pt-6">
+                        {view === 'home' && <HomeView user={user} setView={setView} />}
+                        {view === 'map' && <MapView onBack={() => setView('home')} />}
+                        {view === 'protocol' && <ProtocolView onBack={() => setView('home')} />}
+                        {view === 'legal' && <LegalView onBack={() => setView('home')} />}
                     </main>
                 </div>
             );
