@@ -21,10 +21,6 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <!-- Leaflet Map -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRS9BMY=" crossorigin=""/>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
@@ -146,13 +142,6 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
         ::-webkit-scrollbar { width: 0px; background: transparent; }
-        /* Map Override for dark mode */
-        .leaflet-layer,
-        .leaflet-control-zoom-in,
-        .leaflet-control-zoom-out,
-        .leaflet-control-attribution {
-            filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-        }
     </style>
 </head>
 <body>
@@ -390,17 +379,18 @@
             }, []);
 
             const handleSOS = () => { 
-                setSosActive(true);
-                if(navigator.vibrate) navigator.vibrate([500,200,500]);
+                console.log("SOS Disabled");
+                // setSosActive(true);
+                // if(navigator.vibrate) navigator.vibrate([500,200,500]);
                 
-                if (coords) {
-                    const text = `HELP! I am in danger. My location: https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
-                    setTimeout(() => {
-                        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-                    }, 1000);
-                }
+                // if (coords) {
+                //     const text = `HELP! I am in danger. My location: https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
+                //     setTimeout(() => {
+                //         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                //     }, 1000);
+                // }
 
-                setTimeout(() => setSosActive(false), 3000);
+                // setTimeout(() => setSosActive(false), 3000);
             };
             
             return (
@@ -451,8 +441,6 @@
 
         const MapView = ({ onBack, user }) => {
             const [isExpanded, setIsExpanded] = useState(false);
-            const mapRef = useRef(null);
-            const mapInstanceRef = useRef(null);
             
             // FRONTEND ONLY: Local state for Guardians (Mock Data)
             const [guardians, setGuardians] = useState([
@@ -472,56 +460,17 @@
                 setGuardians(guardians.filter(g => g.id !== id));
             };
 
-            // Initialize Leaflet
-            useEffect(() => {
-                if (!mapRef.current) return;
-                
-                if (mapInstanceRef.current) return;
-
-                const initMap = async () => {
-                    let lat = 28.6139; // Default New Delhi
-                    let lng = 77.2090;
-
-                    if(navigator.geolocation) {
-                        navigator.geolocation.getCurrentPosition((pos) => {
-                            lat = pos.coords.latitude;
-                            lng = pos.coords.longitude;
-                            if(mapInstanceRef.current) {
-                                mapInstanceRef.current.setView([lat, lng], 15);
-                                L.marker([lat, lng]).addTo(mapInstanceRef.current)
-                                    .bindPopup('You are here')
-                                    .openPopup();
-                            }
-                        });
-                    }
-
-                    const map = L.map(mapRef.current, { zoomControl: false }).setView([lat, lng], 13);
-                    
-                    // Dark Mode Map Tiles
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        attribution: '&copy; OpenStreetMap contributors',
-                        maxZoom: 19,
-                    }).addTo(map);
-                    
-                    L.marker([lat, lng]).addTo(map);
-
-                    mapInstanceRef.current = map;
-                };
-
-                initMap();
-
-                return () => {
-                    if (mapInstanceRef.current) {
-                        mapInstanceRef.current.remove();
-                        mapInstanceRef.current = null;
-                    }
-                };
-            }, []);
-
             return (
                 <div className="h-full w-full relative bg-[#000000] overflow-hidden flex flex-col">
-                    {/* Leaflet Map Container */}
-                    <div ref={mapRef} className="absolute inset-0 z-0 bg-slate-900"></div>
+                    {/* Placeholder Map Container */}
+                    <div className="absolute inset-0 z-0 bg-slate-900/50 flex flex-col items-center justify-center p-10 text-center">
+                        <div className="w-20 h-20 rounded-full bg-slate-800/50 border border-white/5 flex items-center justify-center mb-4">
+                            <Icon name="Map" className="w-8 h-8 text-slate-600" />
+                        </div>
+                        <h3 className="text-white font-bold text-lg mb-2">Map Module Placeholder</h3>
+                        <p className="text-slate-500 text-xs font-mono uppercase tracking-wide">Ready for Backend Integration</p>
+                        <div className="mt-8 grid-bg w-full h-32 opacity-20 border border-white/5 rounded-xl"></div>
+                    </div>
 
                     <div className="absolute top-6 left-6 z-20"><button onClick={onBack} className="p-3 bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white shadow-lg"><Icon name="ArrowLeft" className="w-6 h-6"/></button></div>
                     <div className="absolute top-6 right-6 z-20"><div className="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 border-rose-500/30 bg-black/60"><span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse"></span><span className="text-[10px] font-mono text-rose-400 font-bold">LIVE GPS</span></div></div>
