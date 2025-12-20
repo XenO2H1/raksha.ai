@@ -193,7 +193,6 @@
         const supabase = window.supabase.createClient('https://onpwkocasxwimhubimny.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ucHdrb2Nhc3h3aW1odWJpbW55Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM5OTQ4MTUsImV4cCI6MjA3OTU3MDgxNX0.fnYZfulWBgNUKVD8SmF_hi0lMoXG-hbQlb0bBNl2Mg4');
 
         // --- AUDIO SIREN UTILS ---
-        // Uses Web Audio API to create a loud siren without external assets
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         let sirenOscillator = null;
         let sirenGain = null;
@@ -209,14 +208,13 @@
                 
                 sirenOscillator.type = 'sawtooth';
                 sirenOscillator.frequency.value = 600;
-                sirenGain.gain.value = 1.0; // Max volume
+                sirenGain.gain.value = 1.0; 
                 
                 sirenOscillator.connect(sirenGain);
                 sirenGain.connect(audioCtx.destination);
                 
                 sirenOscillator.start();
 
-                // Modulate frequency for police siren effect
                 let high = false;
                 sirenInterval = setInterval(() => {
                     const now = audioCtx.currentTime;
@@ -284,7 +282,7 @@
 
         // --- FAKE CALL COMPONENT ---
         const FakeCallScreen = ({ onEnd }) => {
-            const [status, setStatus] = useState('incoming'); // incoming, active
+            const [status, setStatus] = useState('incoming'); 
             const [timer, setTimer] = useState(0);
 
             useEffect(() => {
@@ -351,8 +349,6 @@
                         (err) => console.log(err)
                     );
                 }
-                
-                // Audio Context Init on User Interaction
                 const initAudio = () => { if(audioCtx.state === 'suspended') audioCtx.resume(); };
                 window.addEventListener('click', initAudio, { once: true });
                 window.addEventListener('touchstart', initAudio, { once: true });
@@ -381,7 +377,7 @@
                         if (lastX !== undefined) {
                             const speed = Math.abs(current.x + current.y + current.z - lastX - lastY - lastZ) / diffTime * 10000;
                             if (speed > threshold) {
-                                handleSOS(); // Trigger SOS on shake
+                                handleSOS(); 
                             }
                         }
                         lastX = current.x;
@@ -389,9 +385,6 @@
                         lastZ = current.z;
                     }
                 };
-
-                // iOS 13+ requires permission for device motion, usually triggered by a click.
-                // For now, we add the listener directly which works on Android and older iOS.
                 window.addEventListener('devicemotion', handleMotion);
                 return () => window.removeEventListener('devicemotion', handleMotion);
             }, []);
@@ -400,10 +393,8 @@
                 setSosActive(true);
                 if(navigator.vibrate) navigator.vibrate([500,200,500]);
                 
-                // WhatsApp Integration
                 if (coords) {
                     const text = `HELP! I am in danger. My location: https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`;
-                    // Use timeout to allow UI update before opening window
                     setTimeout(() => {
                         window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
                     }, 1000);
@@ -463,44 +454,28 @@
             const mapRef = useRef(null);
             const mapInstanceRef = useRef(null);
             
-            // Guardian State
-            const [guardians, setGuardians] = useState([]);
-            const [newGuardian, setNewGuardian] = useState({ name: '', phone: '', relationship: '' });
-            const [loadingGuardians, setLoadingGuardians] = useState(false);
+            // FRONTEND ONLY: Local state for Guardians (Mock Data)
+            const [guardians, setGuardians] = useState([
+                { id: 1, name: 'Dad', phone: '9876543210' },
+                { id: 2, name: 'Sister', phone: '9123456789' }
+            ]);
+            const [newGuardian, setNewGuardian] = useState({ name: '', phone: '' });
 
-            // Fetch Guardians
-            useEffect(() => {
-                fetchGuardians();
-            }, []);
-
-            const fetchGuardians = async () => {
-                setLoadingGuardians(true);
-                const { data, error } = await supabase.from('guardians').select('*').eq('user_id', user.id);
-                if (data) setGuardians(data);
-                setLoadingGuardians(false);
-            };
-
-            const addGuardian = async () => {
+            const addGuardian = () => {
                 if(!newGuardian.name || !newGuardian.phone) return;
-                const { error } = await supabase.from('guardians').insert([{ ...newGuardian, user_id: user.id }]);
-                if(!error) {
-                    setNewGuardian({ name: '', phone: '', relationship: '' });
-                    fetchGuardians();
-                } else {
-                    alert('Error adding guardian. Ensure "guardians" table exists in Supabase.');
-                }
+                const newEntry = { id: Date.now(), ...newGuardian };
+                setGuardians([...guardians, newEntry]);
+                setNewGuardian({ name: '', phone: '' });
             };
 
-            const deleteGuardian = async (id) => {
-                await supabase.from('guardians').delete().eq('id', id);
-                fetchGuardians();
+            const deleteGuardian = (id) => {
+                setGuardians(guardians.filter(g => g.id !== id));
             };
 
             // Initialize Leaflet
             useEffect(() => {
                 if (!mapRef.current) return;
                 
-                // Prevent re-initialization
                 if (mapInstanceRef.current) return;
 
                 const initMap = async () => {
@@ -528,7 +503,6 @@
                         maxZoom: 19,
                     }).addTo(map);
                     
-                    // Add User Marker
                     L.marker([lat, lng]).addTo(map);
 
                     mapInstanceRef.current = map;
@@ -641,7 +615,6 @@
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             const [deferredPrompt, setDeferredPrompt] = useState(null);
             
-            // Fake Call State
             const [isFakeCalling, setIsFakeCalling] = useState(false);
 
             useEffect(() => { 
@@ -651,8 +624,7 @@
             const installApp = () => { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt.userChoice.then((choice) => { if (choice.outcome === 'accepted') setDeferredPrompt(null); }); } else alert("Open browser menu and select 'Add to Home Screen'"); setMobileMenuOpen(false); };
 
             const triggerFakeCall = () => {
-                setView('home'); // Go to home just in case
-                // Delay 5 seconds
+                setView('home'); 
                 setTimeout(() => setIsFakeCalling(true), 5000);
             }
 
