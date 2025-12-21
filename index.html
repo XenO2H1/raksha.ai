@@ -43,10 +43,61 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        /* --- PWA SETUP & MANIFEST GENERATION --- */
-        // This block auto-generates the PWA manifest and injects it into the head
+        /* --- AUDIO ENGINE (Imported & Adapted from File 13) --- */
+        class SirenManager {
+            constructor() { 
+                this.audioCtx = null; 
+                this.oscillator = null; 
+                this.gainNode = null; 
+                this.lfo = null; 
+                this.lfoGain = null; 
+            }
+            
+            isActive() { return !!this.oscillator; }
+            
+            start() {
+                try {
+                    if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+                    
+                    this.oscillator = this.audioCtx.createOscillator();
+                    this.oscillator.type = 'sawtooth';
+                    this.oscillator.frequency.value = 800; // Base frequency
+                    
+                    this.gainNode = this.audioCtx.createGain();
+                    this.gainNode.gain.value = 0.5;
+                    
+                    // LFO for the "Siren" wail effect
+                    this.lfo = this.audioCtx.createOscillator();
+                    this.lfo.type = 'sine';
+                    this.lfo.frequency.value = 2; // Speed of wail
+                    
+                    this.lfoGain = this.audioCtx.createGain();
+                    this.lfoGain.gain.value = 400; // Depth of wail
+                    
+                    this.lfo.connect(this.lfoGain);
+                    this.lfoGain.connect(this.oscillator.frequency);
+                    
+                    this.oscillator.connect(this.gainNode);
+                    this.gainNode.connect(this.audioCtx.destination);
+                    
+                    this.oscillator.start();
+                    this.lfo.start();
+                } catch (e) { console.error("Audio Context Error:", e); }
+            }
+            
+            stop() {
+                try {
+                    if (this.oscillator) { this.oscillator.stop(); this.oscillator.disconnect(); this.oscillator = null; }
+                    if (this.lfo) { this.lfo.stop(); this.lfo.disconnect(); this.lfo = null; }
+                    if (this.gainNode) { this.gainNode.disconnect(); this.gainNode = null; }
+                } catch (e) { console.error("Error stopping audio:", e); }
+            }
+        }
+
+        /* --- PWA SETUP --- */
         (function setupPWA() {
-            // Base64 SVG Icon for the Manifest
+            // Base64 SVG Icon for the Manifest (Raksha Rose Theme)
             const iconSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23e11d48' d='M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 472c-119.3 0-216-96.7-216-216S136.7 40 256 40s216 96.7 216 216-96.7 216-216 216z'/%3E%3Cpath fill='white' d='M256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 224c-53 0-96-43-96-96s43-96 96-96 96 43 96 96-43 96-96 96z'/%3E%3C/svg%3E`;
             
             const manifest = {
@@ -74,13 +125,14 @@
             document.head.appendChild(appleLink);
         })();
 
-        // --- ICON COMPONENTS (Replaces lucide-react for standalone HTML) ---
+        /* --- ICONS --- */
         const IconBase = ({ d, className = "", ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {d}
             </svg>
         );
 
+        // Original Icons from Raksha (File 14)
         const Shield = (p) => <IconBase {...p} d={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />} />;
         const Phone = (p) => <IconBase {...p} d={<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />} />;
         const MapPin = (p) => <IconBase {...p} d={<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>} />;
@@ -96,6 +148,19 @@
         const CheckCircle = (p) => <IconBase {...p} d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>} />;
         const Siren = (p) => <IconBase {...p} d={<><path d="M7 12a5 5 0 0 1 5-5v0a5 5 0 0 1 5 5v6H7v-6Z"/><path d="M5 20a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2H5v-2Z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 7a5 5 0 0 0-9.55 2.94"/></>} />;
         const Download = (p) => <IconBase {...p} d={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>} />;
+
+        // New Icons imported for features from File 13
+        const BookOpen = (p) => <IconBase {...p} d={<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />} />;
+        // FIX: Wrapped multiple paths in a Fragment
+        const Scale = (p) => <IconBase {...p} d={<><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></>} />;
+        // FIX: Wrapped path, polyline and line in a Fragment
+        const LogOut = (p) => <IconBase {...p} d={<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>} />;
+        const ChevronDown = (p) => <IconBase {...p} d={<polyline points="6 9 12 15 18 9" />} />;
+        const ChevronUp = (p) => <IconBase {...p} d={<polyline points="18 15 12 9 6 15" />} />;
+        // FIX: Wrapped line and polyline in a Fragment
+        const ArrowLeft = (p) => <IconBase {...p} d={<><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></>} />;
+        // FIX: Wrapped multiple paths in a Fragment
+        const Megaphone = (p) => <IconBase {...p} d={<><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></>} />;
 
         /* --- CONFIGURATION --- */
         const API_BASE_URL = 'http://localhost:3000/api';
@@ -120,7 +185,16 @@
             </div>
         );
 
-        const Card = ({ children, className = '' }) => <div className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 ${className}`}>{children}</div>;
+        const Card = ({ children, className = '', onClick }) => <div onClick={onClick} className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-6 ${className}`}>{children}</div>;
+        
+        const QuickExitButton = () => {
+            const handleExit = () => window.location.replace("https://www.google.com");
+            return (
+                <button onClick={handleExit} className="fixed bottom-24 right-4 z-40 bg-gray-800 text-white p-3 rounded-full shadow-lg shadow-gray-400 flex items-center gap-2 active:scale-95 border border-gray-600 opacity-80 hover:opacity-100 transition-opacity">
+                    <LogOut className="w-5 h-5" />
+                </button>
+            );
+        };
 
         /* --- MAIN APP --- */
         function RakshaApp() {
@@ -280,7 +354,7 @@
             }
 
             return (
-                <div className="min-h-screen bg-gray-50 font-sans pb-20">
+                <div className="min-h-screen bg-gray-50 font-sans pb-20 relative">
                     {toast && <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-xl text-white transform transition-all animate-in fade-in slide-in-from-top-4 ${toast.type === 'error' ? 'bg-red-500' : 'bg-green-600'}`}>{toast.message}</div>}
                     
                     <header className="bg-white shadow-sm sticky top-0 z-40">
@@ -302,15 +376,22 @@
                     </header>
 
                     <main className="max-w-md mx-auto p-4 space-y-4">
-                        {activeTab === 'home' && <HomeScreen user={user} apiCall={apiCall} showToast={showToast} />}
+                        {activeTab === 'home' && <HomeScreen user={user} apiCall={apiCall} showToast={showToast} onChangeTab={setActiveTab} />}
                         {activeTab === 'contacts' && <ContactsScreen apiCall={apiCall} showToast={showToast} />}
                         {activeTab === 'map' && <MapScreen apiCall={apiCall} />}
                         {activeTab === 'chat' && <LegalChatScreen apiCall={apiCall} />}
+                        
+                        {/* New Screens from File 13 integrated here */}
+                        {activeTab === 'rights' && <RightsScreen onBack={() => setActiveTab('home')} />}
+                        {activeTab === 'protocols' && <ProtocolsScreen onBack={() => setActiveTab('home')} />}
+                        {activeTab === 'helplines' && <HelplinesScreen onBack={() => setActiveTab('home')} />}
                     </main>
+
+                    <QuickExitButton />
 
                     <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 pb-safe">
                         <div className="max-w-md mx-auto flex justify-around p-2">
-                            <NavButton icon={Shield} label="Home" active={activeTab === 'home'} onClick={() => setActiveTab('home')} />
+                            <NavButton icon={Shield} label="Home" active={['home', 'rights', 'protocols', 'helplines'].includes(activeTab)} onClick={() => setActiveTab('home')} />
                             <NavButton icon={MapPin} label="Route" active={activeTab === 'map'} onClick={() => setActiveTab('map')} />
                             <NavButton icon={Siren} label="Contacts" active={activeTab === 'contacts'} onClick={() => setActiveTab('contacts')} />
                             <NavButton icon={MessageSquare} label="Legal AI" active={activeTab === 'chat'} onClick={() => setActiveTab('chat')} />
@@ -321,30 +402,207 @@
         }
 
         /* --- SUB SCREENS --- */
-        function HomeScreen({ user, apiCall, showToast }) {
+        function HomeScreen({ user, apiCall, showToast, onChangeTab }) {
             const [sosActive, setSosActive] = useState(false);
-            const triggerSOS = async () => { try { const res = await apiCall('/panic', 'POST'); setSosActive(true); showToast(`SOS SENT! Notified ${res.notified_contacts?.length || 0} contacts.`, 'error'); } catch (err) { showToast("Failed to trigger SOS", 'error'); } };
-            const resolveSOS = async () => { try { await apiCall('/panic/resolve', 'POST'); setSosActive(false); showToast("SOS Resolved. Stay safe."); } catch (err) { showToast("Failed to resolve SOS", 'error'); } };
+            const [sirenActive, setSirenActive] = useState(false);
+            const sirenRef = useRef(null);
+
+            useEffect(() => { 
+                sirenRef.current = new SirenManager(); 
+                return () => { if (sirenRef.current) sirenRef.current.stop(); }; 
+            }, []);
+
+            const triggerSOS = async () => { 
+                try { 
+                    const res = await apiCall('/panic', 'POST'); 
+                    setSosActive(true); 
+                    showToast(`SOS SENT! Notified ${res.notified_contacts?.length || 0} contacts.`, 'error'); 
+                } catch (err) { 
+                    showToast("Failed to trigger SOS", 'error'); 
+                } 
+            };
+            
+            const resolveSOS = async () => { 
+                try { 
+                    await apiCall('/panic/resolve', 'POST'); 
+                    setSosActive(false); 
+                    showToast("SOS Resolved. Stay safe."); 
+                } catch (err) { 
+                    showToast("Failed to resolve SOS", 'error'); 
+                } 
+            };
+            
+            const toggleSiren = () => {
+                if (sirenActive) { 
+                    sirenRef.current.stop(); 
+                    setSirenActive(false); 
+                } else { 
+                    sirenRef.current.start(); 
+                    setSirenActive(true); 
+                }
+            };
+
             return (
                 <div className="space-y-6 animate-in fade-in zoom-in duration-300">
                     <div className="bg-gradient-to-r from-rose-500 to-purple-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
                         <div className="relative z-10"><h2 className="text-2xl font-bold mb-1">Hi, {user.email?.split('@')[0]}</h2><p className="text-rose-100 opacity-90">You are protected by Raksha.</p></div>
                         <Shield className="absolute -bottom-4 -right-4 w-32 h-32 text-white opacity-10" />
                     </div>
-                    <div className="flex flex-col items-center justify-center py-8">
-                        <button onClick={sosActive ? resolveSOS : triggerSOS} className={`relative w-48 h-48 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xl ${sosActive ? 'bg-green-500 shadow-green-200 animate-pulse' : 'bg-red-600 shadow-red-200 hover:scale-105 active:scale-95'}`}>
-                            {sosActive ? <><CheckCircle className="w-16 h-16 text-white mb-2" /><span className="text-white font-bold text-lg">I AM SAFE</span></> : <><div className="absolute inset-0 rounded-full border-4 border-white opacity-20 animate-ping" /><AlertTriangle className="w-16 h-16 text-white mb-2" /><span className="text-white font-bold text-2xl">SOS</span><span className="text-red-100 text-xs mt-1">TAP FOR HELP</span></>}
-                        </button>
-                        <p className="text-gray-500 text-sm mt-6 text-center max-w-xs">{sosActive ? "Alert is active. Your live location is being shared." : "Pressing SOS will share your live location with trusted contacts."}</p>
+                    
+                    {/* SOS & Siren Section */}
+                    <div className="flex gap-4 justify-center items-center py-4">
+                        <div className="flex flex-col items-center">
+                            <button onClick={sosActive ? resolveSOS : triggerSOS} className={`relative w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xl ${sosActive ? 'bg-green-500 shadow-green-200 animate-pulse' : 'bg-red-600 shadow-red-200 hover:scale-105 active:scale-95'}`}>
+                                {sosActive ? <><CheckCircle className="w-12 h-12 text-white mb-2" /><span className="text-white font-bold text-lg">I AM SAFE</span></> : <><div className="absolute inset-0 rounded-full border-4 border-white opacity-20 animate-ping" /><AlertTriangle className="w-14 h-14 text-white mb-2" /><span className="text-white font-bold text-xl">SOS</span></>}
+                            </button>
+                            <span className="text-xs text-gray-500 mt-2">Alert Contacts</span>
+                        </div>
+                        
+                        <div className="flex flex-col items-center">
+                            <button onClick={toggleSiren} className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-lg ${sirenActive ? 'bg-orange-500 animate-pulse' : 'bg-white border-2 border-orange-100 hover:border-orange-500'}`}>
+                                <Megaphone className={`w-8 h-8 mb-1 ${sirenActive ? 'text-white' : 'text-orange-500'}`} />
+                                <span className={`text-[10px] font-bold ${sirenActive ? 'text-white' : 'text-orange-500'}`}>{sirenActive ? 'STOP' : 'SIREN'}</span>
+                            </button>
+                            <span className="text-xs text-gray-500 mt-2">Loud Alarm</span>
+                        </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3"><div className="bg-blue-100 p-2 rounded-lg"><Phone className="w-5 h-5 text-blue-600"/></div><div><div className="font-bold text-gray-800">112</div><div className="text-xs text-gray-500">National Helpline</div></div></div>
-                        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center gap-3"><div className="bg-orange-100 p-2 rounded-lg"><Siren className="w-5 h-5 text-orange-600"/></div><div><div className="font-bold text-gray-800">1091</div><div className="text-xs text-gray-500">Women Helpline</div></div></div>
+
+                    {/* Tools Grid (Imported ideas from File 13) */}
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Safety Tools</h3>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button onClick={() => onChangeTab('helplines')} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2 hover:bg-rose-50 transition-colors text-left">
+                                <div className="bg-rose-100 p-2 rounded-lg w-fit"><Phone className="w-5 h-5 text-rose-600"/></div>
+                                <div><div className="font-bold text-gray-800">Helplines</div><div className="text-xs text-gray-500">Emergency Numbers</div></div>
+                            </button>
+                            <button onClick={() => onChangeTab('protocols')} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2 hover:bg-amber-50 transition-colors text-left">
+                                <div className="bg-amber-100 p-2 rounded-lg w-fit"><BookOpen className="w-5 h-5 text-amber-600"/></div>
+                                <div><div className="font-bold text-gray-800">Protocols</div><div className="text-xs text-gray-500">Safety Guides</div></div>
+                            </button>
+                            <button onClick={() => onChangeTab('rights')} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2 hover:bg-indigo-50 transition-colors text-left">
+                                <div className="bg-indigo-100 p-2 rounded-lg w-fit"><Scale className="w-5 h-5 text-indigo-600"/></div>
+                                <div><div className="font-bold text-gray-800">My Rights</div><div className="text-xs text-gray-500">Legal Info</div></div>
+                            </button>
+                            <button onClick={() => onChangeTab('map')} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-2 hover:bg-green-50 transition-colors text-left">
+                                <div className="bg-green-100 p-2 rounded-lg w-fit"><MapPin className="w-5 h-5 text-green-600"/></div>
+                                <div><div className="font-bold text-gray-800">Safe Map</div><div className="text-xs text-gray-500">Route Finder</div></div>
+                            </button>
+                        </div>
                     </div>
                 </div>
             );
         }
 
+        /* --- NEW SCREENS ADAPTED FROM FILE 13 --- */
+
+        function RightsScreen({ onBack }) {
+            const [selectedId, setSelectedId] = useState(null);
+            const rights = [
+                { id: 1, title: "Right to Zero FIR", desc: "You can file a First Information Report (FIR) at any police station irrespective of the location of the incident. The police cannot refuse to register it." },
+                { id: 2, title: "No Arrest After Sunset", desc: "Under Section 46 of CrPC, women cannot be arrested after sunset and before sunrise, except in exceptional circumstances with a magistrate's order." },
+                { id: 3, title: "Right to Privacy", desc: "Under Section 228A of IPC, the identity of a rape victim must be kept confidential. Police and media cannot disclose your name or photo." },
+                { id: 4, title: "Right to Free Legal Aid", desc: "Female victims of violence (rape, domestic abuse, etc.) have the right to get free legal assistance from the Legal Services Authority." },
+                { id: 5, title: "Virtual Complaints", desc: "You have the right to file a complaint via email or registered post if you cannot physically visit a police station." }
+            ];
+
+            return (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft className="w-5 h-5" /></button>
+                        <h2 className="text-xl font-bold text-gray-800">Women's Rights</h2>
+                    </div>
+                    {rights.map(right => (
+                        <div key={right.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <button onClick={() => setSelectedId(selectedId === right.id ? null : right.id)} className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-50">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-indigo-100 p-2 rounded-full text-indigo-600"><Scale className="w-4 h-4"/></div>
+                                    <span className="font-semibold text-gray-800">{right.title}</span>
+                                </div>
+                                {selectedId === right.id ? <ChevronUp className="w-4 h-4 text-gray-400"/> : <ChevronDown className="w-4 h-4 text-gray-400"/>}
+                            </button>
+                            {selectedId === right.id && <div className="px-4 pb-4 pt-0 text-sm text-gray-600 leading-relaxed border-t border-gray-50 mt-2 pt-2">{right.desc}</div>}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        function ProtocolsScreen({ onBack }) {
+            const [selectedId, setSelectedId] = useState(null);
+            const protocols = [
+                { id: 'general', title: 'General Safety', icon: Shield, color: 'text-emerald-600', bg: 'bg-emerald-100', steps: ['Stay aware of surroundings', 'Keep emergency contacts ready', 'Trust your instincts', 'Share location with family'] },
+                { id: 'harassment', title: 'Harassment', icon: AlertTriangle, color: 'text-orange-600', bg: 'bg-orange-100', steps: ['Move to a crowded area', 'Call 100 or Emergency SOS', 'Do not engage the harasser', 'Record evidence if safe'] },
+                { id: 'medical', title: 'Medical Emergency', icon: CheckCircle, color: 'text-rose-600', bg: 'bg-rose-100', steps: ['Check for breathing/pulse', 'Call Ambulance immediately', 'Perform CPR if trained', 'Do not move patient unless necessary'] }
+            ];
+
+            return (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft className="w-5 h-5" /></button>
+                        <h2 className="text-xl font-bold text-gray-800">Safety Protocols</h2>
+                    </div>
+                    {protocols.map(p => (
+                        <div key={p.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <button onClick={() => setSelectedId(selectedId === p.id ? null : p.id)} className="w-full p-4 flex items-center justify-between text-left hover:bg-gray-50">
+                                <div className="flex items-center gap-3">
+                                    <div className={`${p.bg} p-2 rounded-full ${p.color}`}><p.icon className="w-4 h-4"/></div>
+                                    <span className="font-semibold text-gray-800">{p.title}</span>
+                                </div>
+                                {selectedId === p.id ? <ChevronUp className="w-4 h-4 text-gray-400"/> : <ChevronDown className="w-4 h-4 text-gray-400"/>}
+                            </button>
+                            {selectedId === p.id && (
+                                <div className="px-4 pb-4 pt-0">
+                                    <ul className="space-y-2 mt-2">
+                                        {p.steps.map((step, idx) => (
+                                            <li key={idx} className="flex gap-3 text-sm text-gray-600 items-start">
+                                                <span className={`text-xs font-bold px-1.5 py-0.5 rounded bg-gray-100`}>{idx + 1}</span>
+                                                <span className="leading-tight">{step}</span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            );
+        }
+
+        function HelplinesScreen({ onBack }) {
+            const helplines = [
+                { name: "National Emergency", number: "112", bg: "bg-rose-100", text: "text-rose-600" },
+                { name: "Police", number: "100", bg: "bg-blue-100", text: "text-blue-600" },
+                { name: "Women Helpline", number: "1091", bg: "bg-pink-100", text: "text-pink-600" },
+                { name: "Ambulance", number: "102", bg: "bg-green-100", text: "text-green-600" },
+                { name: "Fire Brigade", number: "101", bg: "bg-orange-100", text: "text-orange-600" },
+                { name: "Cyber Crime", number: "1930", bg: "bg-gray-100", text: "text-gray-600" },
+            ];
+
+            return (
+                <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                        <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-full"><ArrowLeft className="w-5 h-5" /></button>
+                        <h2 className="text-xl font-bold text-gray-800">Helplines</h2>
+                    </div>
+                    <div className="grid gap-3">
+                        {helplines.map((h, i) => (
+                            <div key={i} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className={`${h.bg} w-10 h-10 rounded-full flex items-center justify-center ${h.text}`}><Phone className="w-5 h-5"/></div>
+                                    <div>
+                                        <h3 className="text-gray-700 font-semibold text-sm">{h.name}</h3>
+                                        <p className="text-lg font-bold text-gray-900">{h.number}</p>
+                                    </div>
+                                </div>
+                                <a href={`tel:${h.number}`} className="bg-gray-50 hover:bg-green-50 text-green-600 p-2 rounded-full border border-gray-200"><Phone className="w-4 h-4"/></a>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        /* --- EXISTING SUB SCREENS (Unchanged Logic, just re-rendered) --- */
         function ContactsScreen({ apiCall, showToast }) {
             const [contacts, setContacts] = useState([]);
             const [showAddForm, setShowAddForm] = useState(false);
