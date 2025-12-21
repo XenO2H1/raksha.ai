@@ -13,6 +13,12 @@
     <meta name="apple-mobile-web-app-title" content="Raksha">
     <meta name="application-name" content="Raksha">
 
+    <!-- STATIC PWA MANIFEST (Base64 Encoded) -->
+    <!-- This tells the browser to treat this as a standalone app, not a website shortcut -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmFra3NoYSBXb21lbiBTYWZldHkiLCJzaG9ydF9uYW1lIjoiUmFra3NoYSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjZTExZDQ4Iiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNTkyLzI1OTIzMTcucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyJdfQ==">
+    
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2592/2592317.png">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -40,10 +46,26 @@
 <body class="bg-gray-50 text-gray-900 select-none">
     <div id="root"></div>
 
+    <!-- Service Worker Registration for WebAPK (Native Install) Support -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // We create a dummy service worker on the fly to trigger the "Add to Home Screen" logic in Chrome
+                const swCode = "self.addEventListener('fetch', (event) => { return; }); self.addEventListener('install', (e) => self.skipWaiting());";
+                const blob = new Blob([swCode], {type: 'application/javascript'});
+                const url = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(url)
+                    .then(registration => console.log('SW registered: ', registration))
+                    .catch(registrationError => console.log('SW registration failed: ', registrationError));
+            });
+        }
+    </script>
+
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
-        /* --- AUDIO ENGINE (Imported & Adapted from File 13) --- */
+        /* --- AUDIO ENGINE --- */
         class SirenManager {
             constructor() { 
                 this.audioCtx = null; 
@@ -52,9 +74,7 @@
                 this.lfo = null; 
                 this.lfoGain = null; 
             }
-            
             isActive() { return !!this.oscillator; }
-            
             start() {
                 try {
                     if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -67,7 +87,6 @@
                     this.gainNode = this.audioCtx.createGain();
                     this.gainNode.gain.value = 0.5;
                     
-                    // LFO for the "Siren" wail effect
                     this.lfo = this.audioCtx.createOscillator();
                     this.lfo.type = 'sine';
                     this.lfo.frequency.value = 2; // Speed of wail
@@ -85,7 +104,6 @@
                     this.lfo.start();
                 } catch (e) { console.error("Audio Context Error:", e); }
             }
-            
             stop() {
                 try {
                     if (this.oscillator) { this.oscillator.stop(); this.oscillator.disconnect(); this.oscillator = null; }
@@ -95,36 +113,6 @@
             }
         }
 
-        /* --- PWA SETUP --- */
-        (function setupPWA() {
-            // Base64 SVG Icon for the Manifest (Raksha Rose Theme)
-            const iconSvg = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23e11d48' d='M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zm0 472c-119.3 0-216-96.7-216-216S136.7 40 256 40s216 96.7 216 216-96.7 216-216 216z'/%3E%3Cpath fill='white' d='M256 128c-70.7 0-128 57.3-128 128s57.3 128 128 128 128-57.3 128-128-57.3-128-128-128zm0 224c-53 0-96-43-96-96s43-96 96-96 96 43 96 96-43 96-96 96z'/%3E%3C/svg%3E`;
-            
-            const manifest = {
-                "name": "Raksha Women Safety",
-                "short_name": "Raksha",
-                "start_url": ".",
-                "display": "standalone",
-                "background_color": "#ffffff",
-                "theme_color": "#e11d48",
-                "orientation": "portrait",
-                "icons": [
-                    { "src": iconSvg, "sizes": "512x512", "type": "image/svg+xml" }
-                ]
-            };
-
-            const link = document.createElement('link');
-            link.rel = 'manifest';
-            link.href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
-            document.head.appendChild(link);
-
-            // Also set apple touch icon
-            const appleLink = document.createElement('link');
-            appleLink.rel = 'apple-touch-icon';
-            appleLink.href = iconSvg;
-            document.head.appendChild(appleLink);
-        })();
-
         /* --- ICONS --- */
         const IconBase = ({ d, className = "", ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
@@ -132,7 +120,6 @@
             </svg>
         );
 
-        // Original Icons from Raksha (File 14)
         const Shield = (p) => <IconBase {...p} d={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />} />;
         const Phone = (p) => <IconBase {...p} d={<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />} />;
         const MapPin = (p) => <IconBase {...p} d={<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>} />;
@@ -148,18 +135,14 @@
         const CheckCircle = (p) => <IconBase {...p} d={<><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></>} />;
         const Siren = (p) => <IconBase {...p} d={<><path d="M7 12a5 5 0 0 1 5-5v0a5 5 0 0 1 5 5v6H7v-6Z"/><path d="M5 20a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2H5v-2Z"/><path d="M21 12h1"/><path d="M18.5 4.5 18 5"/><path d="M2 12h1"/><path d="M12 2v1"/><path d="m4.929 4.929.707.707"/><path d="M12 7a5 5 0 0 0-9.55 2.94"/></>} />;
         const Download = (p) => <IconBase {...p} d={<><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></>} />;
-
-        // New Icons imported for features from File 13
         const BookOpen = (p) => <IconBase {...p} d={<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />} />;
-        // FIX: Wrapped multiple paths in a Fragment
+        
+        // Corrected Icons with Fragments <></>
         const Scale = (p) => <IconBase {...p} d={<><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></>} />;
-        // FIX: Wrapped path, polyline and line in a Fragment
         const LogOut = (p) => <IconBase {...p} d={<><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></>} />;
         const ChevronDown = (p) => <IconBase {...p} d={<polyline points="6 9 12 15 18 9" />} />;
         const ChevronUp = (p) => <IconBase {...p} d={<polyline points="18 15 12 9 6 15" />} />;
-        // FIX: Wrapped line and polyline in a Fragment
         const ArrowLeft = (p) => <IconBase {...p} d={<><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></>} />;
-        // FIX: Wrapped multiple paths in a Fragment
         const Megaphone = (p) => <IconBase {...p} d={<><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></>} />;
 
         /* --- CONFIGURATION --- */
@@ -204,8 +187,6 @@
             const [demoMode, setDemoMode] = useState(false);
             const [loading, setLoading] = useState(false);
             const [toast, setToast] = useState(null);
-            
-            // PWA Install Prompt State
             const [installPrompt, setInstallPrompt] = useState(null);
 
             useEffect(() => {
@@ -257,16 +238,11 @@
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) headers['Authorization'] = `Bearer ${token}`;
                     const response = await fetch(`${API_BASE_URL}${endpoint}`, { method, headers, body: body ? JSON.stringify(body) : null });
-                    if (!response.ok) {
-                        if (response.status === 404 || response.status === 500) throw new Error("Server Error");
-                        const errData = await response.json();
-                        throw new Error(errData.message || 'Request failed');
-                    }
+                    if (!response.ok) throw new Error("Server Error");
                     const data = await response.json();
                     setLoading(false);
                     return data;
                 } catch (error) {
-                    console.warn("API Call Failed, using fallback", error);
                     setDemoMode(true);
                     if (!demoMode) showToast("Backend unreachable. Switched to Demo Mode.", "error");
                     const data = await getMockResponse(endpoint, method, body);
@@ -284,25 +260,12 @@
 
             const handleLogin = async (e) => {
                 e.preventDefault();
-                const email = e.target.email.value;
-                const password = e.target.password.value;
                 try {
-                    const data = await apiCall('/login', 'POST', { email, password });
+                    const data = await apiCall('/login', 'POST', { email: e.target.email.value, password: e.target.password.value });
                     setToken(data.token);
-                    setUser({ email, id: data.user_id });
+                    setUser({ email: e.target.email.value, id: data.user_id });
                     localStorage.setItem('raksha_token', data.token);
-                    localStorage.setItem('raksha_user', JSON.stringify({ email, id: data.user_id }));
-                    showToast("Welcome back!");
-                } catch (err) { showToast(err.message, 'error'); }
-            };
-
-            const handleRegister = async (e) => {
-                e.preventDefault();
-                const formData = new FormData(e.target);
-                try {
-                    await apiCall('/register', 'POST', Object.fromEntries(formData));
-                    showToast("Registration successful! Please login.");
-                    setActiveTab('login'); 
+                    localStorage.setItem('raksha_user', JSON.stringify({ email: e.target.email.value, id: data.user_id }));
                 } catch (err) { showToast(err.message, 'error'); }
             };
 
@@ -324,13 +287,11 @@
                                 </div>
                                 <h1 className="text-2xl font-bold text-gray-900">Raksha</h1>
                                 <p className="text-gray-500">Women Safety & Empowerment</p>
-                                {demoMode && <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mt-2 inline-block">Demo Mode Active</span>}
                             </div>
                             {activeTab === 'register' ? (
-                                <form onSubmit={handleRegister}>
+                                <form onSubmit={(e) => { e.preventDefault(); setActiveTab('login'); showToast("Registration Simulated"); }}>
                                     <Input name="name" label="Full Name" placeholder="Jane Doe" required />
                                     <Input name="email" label="Email" type="email" placeholder="jane@example.com" required />
-                                    <Input name="phone_number" label="Phone" placeholder="+91 98765 43210" required />
                                     <Input name="password" label="Password" type="password" required />
                                     <Button type="submit" variant="primary" className="w-full mb-4">Create Account</Button>
                                     <p className="text-center text-sm text-gray-600">Already have an account? <button type="button" onClick={() => setActiveTab('login')} className="text-rose-600 font-semibold hover:underline">Login</button></p>
@@ -380,8 +341,6 @@
                         {activeTab === 'contacts' && <ContactsScreen apiCall={apiCall} showToast={showToast} />}
                         {activeTab === 'map' && <MapScreen apiCall={apiCall} />}
                         {activeTab === 'chat' && <LegalChatScreen apiCall={apiCall} />}
-                        
-                        {/* New Screens from File 13 integrated here */}
                         {activeTab === 'rights' && <RightsScreen onBack={() => setActiveTab('home')} />}
                         {activeTab === 'protocols' && <ProtocolsScreen onBack={() => setActiveTab('home')} />}
                         {activeTab === 'helplines' && <HelplinesScreen onBack={() => setActiveTab('home')} />}
@@ -449,7 +408,6 @@
                         <Shield className="absolute -bottom-4 -right-4 w-32 h-32 text-white opacity-10" />
                     </div>
                     
-                    {/* SOS & Siren Section */}
                     <div className="flex gap-4 justify-center items-center py-4">
                         <div className="flex flex-col items-center">
                             <button onClick={sosActive ? resolveSOS : triggerSOS} className={`relative w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-300 shadow-xl ${sosActive ? 'bg-green-500 shadow-green-200 animate-pulse' : 'bg-red-600 shadow-red-200 hover:scale-105 active:scale-95'}`}>
@@ -467,7 +425,6 @@
                         </div>
                     </div>
 
-                    {/* Tools Grid (Imported ideas from File 13) */}
                     <div>
                         <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wider mb-3">Safety Tools</h3>
                         <div className="grid grid-cols-2 gap-3">
@@ -493,8 +450,7 @@
             );
         }
 
-        /* --- NEW SCREENS ADAPTED FROM FILE 13 --- */
-
+        /* --- SCREENS --- */
         function RightsScreen({ onBack }) {
             const [selectedId, setSelectedId] = useState(null);
             const rights = [
@@ -602,7 +558,6 @@
             );
         }
 
-        /* --- EXISTING SUB SCREENS (Unchanged Logic, just re-rendered) --- */
         function ContactsScreen({ apiCall, showToast }) {
             const [contacts, setContacts] = useState([]);
             const [showAddForm, setShowAddForm] = useState(false);
