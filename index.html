@@ -130,9 +130,38 @@
                 setTimeout(() => setToast(null), 3000);
             };
 
+            // MOCK DATA HELPER
+            const getMockResponse = async (endpoint, method, body) => {
+                await new Promise(r => setTimeout(r, 600)); // Simulate delay
+                if (endpoint === '/login') return { token: 'mock-jwt', user_id: '1', message: 'Demo Login' };
+                if (endpoint === '/register') return { message: 'Registered (Demo)', user_id: '1' };
+                if (endpoint === '/contacts' && method === 'GET') {
+                    return [
+                        { contact_id: 1, contact_name: "Mom", contact_phone: "9876543210", relationship_type: "Parent" },
+                        { contact_id: 2, contact_name: "Rahul (Brother)", contact_phone: "9123456789", relationship_type: "Sibling" }
+                    ];
+                }
+                if (endpoint === '/contacts' && method === 'POST') return { message: 'Contact Added (Demo)', contact_id: Math.random() };
+                if (endpoint.includes('/contacts/') && method === 'DELETE') return { message: 'Deleted (Demo)' };
+                if (endpoint === '/panic') return { message: "SOS Alert Triggered!", alert_id: 123, notified_contacts: 2 };
+                if (endpoint === '/panic/resolve') return { message: "Alert Resolved" };
+                if (endpoint === '/chat') return { answer: "This is a demo response from the Legal AI. In a real scenario, I would analyze your legal question using Gemini 1.5 Flash." };
+                if (endpoint === '/generate-safe-route') return { path: [{id: 1, latitude: 28.6, longitude: 77.2, weight: 1}, {id: 2, latitude: 28.7, longitude: 77.3, weight: 2}] };
+                return {};
+            };
+
             // API Handler
             const apiCall = async (endpoint, method = 'GET', body = null) => {
                 setLoading(true);
+
+                // 1. If we are already in Demo Mode, skip network entirely
+                if (demoMode) {
+                    const data = await getMockResponse(endpoint, method, body);
+                    setLoading(false);
+                    return data;
+                }
+
+                // 2. Try Real Network
                 try {
                     const headers = { 'Content-Type': 'application/json' };
                     if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -156,33 +185,26 @@
                 } catch (error) {
                     console.warn("API Call Failed, using fallback", error);
                     
-                    // DEMO MODE LOGIC
+                    // 3. Fallback to Demo Mode on failure
                     setDemoMode(true);
-                    setLoading(false);
-                    
-                    await new Promise(r => setTimeout(r, 600));
-
-                    if (endpoint === '/login') {
-                        if (body.email === 'test@raksha.com') return { token: 'mock-jwt', user_id: '1', message: 'Demo Login' };
-                        throw new Error("Invalid demo credentials (use test@raksha.com)");
-                    }
-                    if (endpoint === '/register') return { message: 'Registered (Demo)', user_id: '1' };
-                    if (endpoint === '/contacts' && method === 'GET') {
-                        return [
-                            { contact_id: 1, contact_name: "Mom", contact_phone: "9876543210", relationship_type: "Parent" },
-                            { contact_id: 2, contact_name: "Rahul (Brother)", contact_phone: "9123456789", relationship_type: "Sibling" }
-                        ];
-                    }
-                    if (endpoint === '/contacts' && method === 'POST') return { message: 'Contact Added (Demo)', contact_id: Math.random() };
-                    if (endpoint.includes('/contacts/') && method === 'DELETE') return { message: 'Deleted (Demo)' };
-                    if (endpoint === '/panic') return { message: "SOS Alert Triggered!", alert_id: 123, notified_contacts: 2 };
-                    if (endpoint === '/panic/resolve') return { message: "Alert Resolved" };
-                    if (endpoint === '/chat') return { answer: "This is a demo response from the Legal AI. In a real scenario, I would analyze your legal question using Gemini 1.5 Flash." };
-                    if (endpoint === '/generate-safe-route') return { path: [{id: 1, latitude: 28.6, longitude: 77.2, weight: 1}, {id: 2, latitude: 28.7, longitude: 77.3, weight: 2}] };
                     
                     if (!demoMode) showToast("Backend unreachable. Switched to Demo Mode.", "error");
-                    return {}; 
+                    
+                    const data = await getMockResponse(endpoint, method, body);
+                    setLoading(false);
+                    return data;
                 }
+            };
+
+            const enterDemoMode = () => {
+                setDemoMode(true);
+                const mockUser = { email: 'demo@raksha.com', id: 'demo-user-1' };
+                const mockToken = 'demo-token-123';
+                
+                setToken(mockToken);
+                setUser(mockUser);
+                // We don't save to localStorage here so a refresh clears the demo session
+                showToast("Entered Demo Mode Testing");
             };
 
             const handleLogin = async (e) => {
@@ -221,6 +243,7 @@
                 setUser(null);
                 localStorage.clear();
                 setActiveTab('home');
+                setDemoMode(false); // Reset demo mode on logout
             };
 
             if (!token) {
@@ -248,14 +271,27 @@
                                     </p>
                                 </form>
                             ) : (
-                                <form onSubmit={handleLogin}>
-                                    <Input name="email" label="Email" type="email" placeholder="test@raksha.com" required />
-                                    <Input name="password" label="Password" type="password" placeholder="******" required />
-                                    <Button type="submit" variant="primary" className="w-full mb-4">Login</Button>
-                                    <p className="text-center text-sm text-gray-600">
+                                <div>
+                                    <form onSubmit={handleLogin}>
+                                        <Input name="email" label="Email" type="email" placeholder="test@raksha.com" required />
+                                        <Input name="password" label="Password" type="password" placeholder="******" required />
+                                        <Button type="submit" variant="primary" className="w-full mb-4">Login</Button>
+                                    </form>
+                                    
+                                    <div className="border-t border-gray-100 my-4 pt-4">
+                                        <button 
+                                            type="button" 
+                                            onClick={enterDemoMode}
+                                            className="w-full py-2 bg-gray-100 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                                        >
+                                            Enter Demo Mode (Bypass Login)
+                                        </button>
+                                    </div>
+
+                                    <p className="text-center text-sm text-gray-600 mt-4">
                                         New to Raksha? <button type="button" onClick={() => setActiveTab('register')} className="text-rose-600 font-semibold hover:underline">Register</button>
                                     </p>
-                                </form>
+                                </div>
                             )}
                         </Card>
                     </div>
