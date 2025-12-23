@@ -32,11 +32,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
+        html {
+            background-color: #110524; /* Match body bg to prevent white bounce */
+        }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
             /* Deep Violet Empower Background */
-            background-color: #2e1065;
+            background-color: #110524; /* Updated to match the dark theme bottom gradient */
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(219, 39, 119, 0.25) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(124, 58, 237, 0.3) 0%, transparent 40%),
@@ -44,9 +47,10 @@
             background-attachment: fixed;
             background-size: cover;
             color: #fdf4ff;
-            overflow: hidden;
+            overflow: hidden; /* Prevent body scroll, use app container */
             height: 100vh;
             width: 100vw;
+            overscroll-behavior: none; /* Prevent bounce effects on body */
         }
         
         /* Pulse Animations */
@@ -118,6 +122,16 @@
             background: linear-gradient(135deg, #fdf4ff 0%, #e0e7ff 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        /* Hide scrollbar for Chrome/Safari/Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
         }
     </style>
 </head>
@@ -433,7 +447,7 @@
 
             if (!token) {
                 return (
-                    <div className="h-full flex items-center justify-center p-6 font-sans relative overflow-y-auto">
+                    <div className="h-full flex items-center justify-center p-6 font-sans relative overflow-y-auto overscroll-none no-scrollbar">
                         <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-fuchsia-900/20 to-transparent pointer-events-none"></div>
                         <Card className="w-full max-w-md relative z-10 !border-fuchsia-500/20 shadow-[0_0_80px_rgba(219,39,119,0.15)]">
                             <div className="text-center mb-10">
@@ -471,11 +485,11 @@
             }
 
             return (
-                <div className="h-full w-full font-sans relative overflow-y-auto">
+                <div className="h-full w-full font-sans relative overflow-y-auto overscroll-none no-scrollbar">
                     {toast && <div className={`fixed top-6 right-6 left-6 z-50 px-6 py-4 rounded-2xl shadow-2xl backdrop-blur-xl text-white border animate-in slide-in-from-top duration-300 flex items-center justify-center font-bold tracking-wide ${toast.type === 'error' ? 'bg-red-500/90 border-red-400/30 shadow-red-900/50' : 'bg-emerald-500/90 border-emerald-400/30 shadow-emerald-900/50'}`}>{toast.message}</div>}
                     
-                    <header className="fixed top-0 w-full z-40 h-20 flex items-center bg-gradient-to-b from-[#110524] via-[#110524]/90 to-transparent">
-                        <div className="max-w-md mx-auto px-6 w-full flex justify-between items-center">
+                    <header className="fixed top-0 w-full z-40 h-20 flex items-center bg-gradient-to-b from-[#110524] via-[#110524]/90 to-transparent pointer-events-none">
+                        <div className="max-w-md mx-auto px-6 w-full flex justify-between items-center pointer-events-auto">
                             <div className="flex items-center gap-3">
                                 <div className="bg-gradient-to-tr from-fuchsia-600 to-purple-600 p-2 rounded-xl shadow-lg shadow-purple-900/50">
                                     <Shield className="w-5 h-5 text-white" />
