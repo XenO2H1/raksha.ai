@@ -54,6 +54,7 @@
         .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         .animate-heartbeat { animation: heartbeat 2s infinite; }
         .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+        .animate-bounce-slow { animation: bounce 2s infinite; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -180,6 +181,8 @@
 
         const Shield = (p) => <IconBase {...p} d={<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />} />;
         const Phone = (p) => <IconBase {...p} d={<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />} />;
+        const PhoneIncoming = (p) => <IconBase {...p} d={<><polyline points="16 2 16 8 22 8" /><line x1="23" y1="1" x2="16" y2="8" /><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></>} />;
+        const PhoneOff = (p) => <IconBase {...p} d={<path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-3.33-2.67m-2.67-3.34a19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91M1 1l22 22" />} />;
         const MapPin = (p) => <IconBase {...p} d={<><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" /></>} />;
         const MessageSquare = (p) => <IconBase {...p} d={<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />} />;
         const AlertTriangle = (p) => <IconBase {...p} d={<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4m0 4h.01" />} />;
@@ -201,9 +204,22 @@
         const ArrowLeft = (p) => <IconBase {...p} d={<><line x1="19" y1="12" x2="5" y2="12" /><polyline points="12 19 5 12 12 5" /></>} />;
         const Megaphone = (p) => <IconBase {...p} d={<><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></>} />;
         const Trophy = (p) => <IconBase {...p} d={<path d="M8 21h8m-4-9v9m-6.7-16.7L5 11h14l-1.3-6.7a2 2 0 0 0-2-1.3h-7.4a2 2 0 0 0-2 1.3z" />} />;
+        const Mic = (p) => <IconBase {...p} d={<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />} />;
+        const Grid = (p) => <IconBase {...p} d={<><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></>} />;
+        const Volume2 = (p) => <IconBase {...p} d={<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />} />;
 
         /* --- CONFIGURATION --- */
         const API_BASE_URL = 'https://lotte-choco.onrender.com/';
+        
+        // -------------------------------------------------------------
+        // PLACEHOLDERS FOR FAKE CALL - REPLACE URL BELOW
+        // -------------------------------------------------------------
+        // Replace the URL below with your GitHub raw content URL when ready.
+        // Example: 'https://raw.githubusercontent.com/yourname/repo/main/audio.mp4'
+        const MOMS_VOICE_URL = 'https://actions.google.com/sounds/v1/human_voices/woman_talking.ogg'; 
+        
+        // Standard phone ringtone (using a reliable creative commons source or data URI if preferred)
+        const RINGTONE_URL = 'https://actions.google.com/sounds/v1/alarms/digital_watch_alarm.ogg'; 
 
         /* --- UI COMPONENTS --- */
         const Button = ({ children, onClick, variant = 'primary', className = '', disabled = false, type = 'button' }) => {
@@ -235,6 +251,99 @@
                 </button>
             );
         };
+
+        /* --- FAKE CALL OVERLAY COMPONENT --- */
+        function FakeCallOverlay({ onClose }) {
+            const [status, setStatus] = useState('ringing'); // 'ringing' | 'connected'
+            const [timer, setTimer] = useState(0);
+            const ringtoneRef = useRef(new Audio(RINGTONE_URL));
+            const voiceRef = useRef(new Audio(MOMS_VOICE_URL));
+
+            useEffect(() => {
+                // Setup Ringtone
+                ringtoneRef.current.loop = true;
+                ringtoneRef.current.play().catch(e => console.log("Audio play failed (interaction required):", e));
+                
+                return () => {
+                    ringtoneRef.current.pause();
+                    voiceRef.current.pause();
+                };
+            }, []);
+
+            useEffect(() => {
+                let interval;
+                if (status === 'connected') {
+                    interval = setInterval(() => setTimer(t => t + 1), 1000);
+                }
+                return () => clearInterval(interval);
+            }, [status]);
+
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+
+            const acceptCall = () => {
+                ringtoneRef.current.pause();
+                voiceRef.current.play().catch(e => console.log("Voice play failed:", e));
+                setStatus('connected');
+            };
+
+            const endCall = () => {
+                ringtoneRef.current.pause();
+                voiceRef.current.pause();
+                onClose();
+            };
+
+            return (
+                <div className="fixed inset-0 z-[100] bg-black/95 flex flex-col items-center pt-20 pb-12 animate-in slide-in-from-bottom duration-300">
+                    {/* Caller Info */}
+                    <div className="flex-1 flex flex-col items-center justify-start w-full px-8">
+                        <div className="w-24 h-24 bg-gray-700 rounded-full flex items-center justify-center mb-6 border-2 border-gray-600 shadow-xl overflow-hidden relative">
+                             <User className="w-12 h-12 text-gray-400" />
+                        </div>
+                        <h2 className="text-3xl font-normal text-white mb-2 tracking-wide">Mom</h2>
+                        <p className="text-gray-400 text-lg tracking-wide">{status === 'ringing' ? 'Mobile...' : formatTime(timer)}</p>
+                    </div>
+
+                    {/* Controls */}
+                    {status === 'ringing' ? (
+                        <div className="w-full max-w-sm px-8 pb-12 flex justify-between items-center">
+                            <button onClick={endCall} className="flex flex-col items-center gap-2 group">
+                                <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-lg shadow-red-500/30 transition-transform active:scale-90 animate-bounce-slow">
+                                    <PhoneOff className="w-8 h-8 text-white fill-current" />
+                                </div>
+                                <span className="text-white font-medium text-sm tracking-wide">Decline</span>
+                            </button>
+                            
+                            <button onClick={acceptCall} className="flex flex-col items-center gap-2 group">
+                                <div className="w-16 h-16 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/30 transition-transform active:scale-90 animate-bounce">
+                                    <Phone className="w-8 h-8 text-white fill-current" />
+                                </div>
+                                <span className="text-white font-medium text-sm tracking-wide">Accept</span>
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="w-full max-w-sm px-8 space-y-12">
+                            {/* In-Call Actions */}
+                            <div className="grid grid-cols-3 gap-8">
+                                <div className="flex flex-col items-center gap-2 opacity-50"><div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center"><Mic className="w-6 h-6"/></div><span className="text-xs">Mute</span></div>
+                                <div className="flex flex-col items-center gap-2 opacity-50"><div className="w-14 h-14 rounded-full border border-white/20 flex items-center justify-center"><Grid className="w-6 h-6"/></div><span className="text-xs">Keypad</span></div>
+                                <div className="flex flex-col items-center gap-2 opacity-100"><div className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center"><Volume2 className="w-6 h-6"/></div><span className="text-xs">Speaker</span></div>
+                            </div>
+                            
+                            {/* End Call */}
+                            <div className="flex justify-center">
+                                <button onClick={endCall} className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-xl shadow-red-500/30 hover:bg-red-600 transition-colors">
+                                    <PhoneOff className="w-8 h-8 text-white fill-current" />
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
 
         /* --- MAIN APP --- */
         function RakshaApp() {
@@ -422,9 +531,10 @@
         function HomeScreen({ user, apiCall, showToast, onChangeTab }) {
             const [sosActive, setSosActive] = useState(false);
             const [sirenActive, setSirenActive] = useState(false);
+            const [fakeCallActive, setFakeCallActive] = useState(false);
             const sirenRef = useRef(null);
             
-            // Audio Recording ke liye naye Refs
+            // Audio Recording Refs
             const mediaRecorderRef = useRef(null);
             const recordingIntervalRef = useRef(null);
 
@@ -501,6 +611,8 @@
 
             return (
                 <div className="space-y-6 animate-in fade-in zoom-in duration-300">
+                    {fakeCallActive && <FakeCallOverlay onClose={() => setFakeCallActive(false)} />}
+                    
                     <div className="glass-panel p-6 relative overflow-hidden group rounded-2xl">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl -mr-10 -mt-10 group-hover:bg-rose-500/20 transition-all duration-500"></div>
                         <div className="relative z-10">
@@ -533,28 +645,32 @@
                                 <div className="bg-rose-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-rose-500/20"><Phone className="w-5 h-5 text-rose-400"/></div>
                                 <div><div className="font-bold text-gray-200">Helplines</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Emergency Number</div></div>
                             </button>
+                            
                             <button onClick={() => onChangeTab('protocols')} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-amber-500 rounded-2xl">
                                 <div className="bg-amber-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-amber-500/20"><BookOpen className="w-5 h-5 text-amber-400"/></div>
                                 <div><div className="font-bold text-gray-200">Protocols</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Safety Guides</div></div>
                             </button>
+                            
                             <button onClick={() => onChangeTab('rights')} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-indigo-500 rounded-2xl">
                                 <div className="bg-indigo-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-indigo-500/20"><Scale className="w-5 h-5 text-indigo-400"/></div>
                                 <div><div className="font-bold text-gray-200">My Rights</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Legal Info</div></div>
                             </button>
+                            
                             <button onClick={() => onChangeTab('map')} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-emerald-500 rounded-2xl">
                                 <div className="bg-emerald-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-emerald-500/20"><MapPin className="w-5 h-5 text-emerald-400"/></div>
                                 <div><div className="font-bold text-gray-200">Safe Map</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Route Finder</div></div>
                             </button>
                             
-                            {/* SAFETY QUIZ BUTTON - LINKS TO QUIZ.HTML */}
-                            <button onClick={openQuiz} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-purple-500 rounded-2xl col-span-2">
-                                <div className="flex items-center gap-4">
-                                    <div className="bg-purple-500/10 p-2.5 rounded-xl w-fit group-hover:scale-110 transition-transform border border-purple-500/20"><Trophy className="w-5 h-5 text-purple-400"/></div>
-                                    <div>
-                                        <div className="font-bold text-gray-200">Safety Quiz</div>
-                                        <div className="text-[10px] text-gray-500 uppercase tracking-wide">Test your rights knowledge</div>
-                                    </div>
-                                </div>
+                             {/* FAKE CALL BUTTON */}
+                             <button onClick={() => setFakeCallActive(true)} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-blue-500 rounded-2xl">
+                                <div className="bg-blue-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-blue-500/20"><PhoneIncoming className="w-5 h-5 text-blue-400"/></div>
+                                <div><div className="font-bold text-gray-200">Fake Call</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Simulate Incoming</div></div>
+                            </button>
+                            
+                            {/* SAFETY QUIZ BUTTON */}
+                            <button onClick={openQuiz} className="glass-panel p-4 hover:bg-white/5 transition-all text-left group border-l-2 border-transparent hover:border-purple-500 rounded-2xl">
+                                <div className="bg-purple-500/10 p-2.5 rounded-xl w-fit mb-3 group-hover:scale-110 transition-transform border border-purple-500/20"><Trophy className="w-5 h-5 text-purple-400"/></div>
+                                <div><div className="font-bold text-gray-200">Safety Quiz</div><div className="text-[10px] text-gray-500 uppercase tracking-wide">Test Rights</div></div>
                             </button>
 
                         </div>
