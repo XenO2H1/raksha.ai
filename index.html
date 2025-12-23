@@ -13,10 +13,11 @@
     <meta name="apple-mobile-web-app-title" content="Raksha">
     <meta name="application-name" content="Raksha">
 
-    <!-- STATIC PWA MANIFEST -->
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmFra3NoYSBXb21lbiBTYWZldHkiLCJzaG9ydF9uYW1lIjoiUmFra3NoYSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMmUxMDY1IiwidGhlbWVfY29sb3IiOiIjZGIyNzc3Iiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImljb25zIjpbeyJzcmMiOiJodHRwczovL2Nkbi1pY29ucy1wbmcuZmxhdGljb24uY29tLzUxMi8yNTkyLzI1OTIzMTcucG5nIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic3JjIjoiaHR0cHM6Ly9jZG4taWNvbnMtcG5nLmZsYXRpY29uLmNvbS81MTIvMjU5Mi8yNTkyMzE3LnBuZyIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmcifV19">
+    <!-- STATIC PWA MANIFEST (Updated with New Custom Icon) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiUmFra3NoYSBXb21lbiBTYWZldHkiLCJzaG9ydF9uYW1lIjoiUmFra3NoYSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMmUxMDY1IiwidGhlbWVfY29sb3IiOiIjZGIyNzc3Iiwib3JpZW50YXRpb24iOiJwb3J0cmFpdCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITjJaeUI0Yld4dWN6MGlhSFIwY0RvdkwzZDNkeTUzTXk1dmNtY3ZNMjR2TWpRaWJtRnRaV1FpSUhSb1pXMWxQV1JsZG1VbElHZGhkR2xuYUhRZ2IzQjBaVzF6UFNJeU5DMHlOQ0l2UGcweU5DMHlOQ0ErQ2lBZ1BISmxaR1YwSUhoMWJYTjBQU0kwTkMwMk5DMGlJR1pwYkd4UFNKZEhjbTV6Y0dGalkyVlRaV04wSWlCM2FXUjBhRDBpTWpRaUlIUnlaVzV6Y0c5d2IyNWZkMmxrZEdnOVVDI2lQbTkwYUdWeWJ3bz0iLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2Uvc3ZnK3htbCJ9XX0=">
     
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2592/2592317.png">
+    <!-- Updated Apple Touch Icon (SVG Data URI) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4gPHBhdGggZD0iTTEyIDIyczgtNCA4LTEwVjVsLTgtMy04IDN2N2MwIDYgOCAxMCA4IDEweiIgZmlsbD0iI2RiMjc3NyIgc3Ryb2tlPSIjZmNmNHZmIiAvPiA8cGF0aCBkPSJNMTIgOGEzIDMgMCAwIDAgLTMgM3Y4YTMgMyAwIDAgMCA2IDB2LThhMyAzIDAgMCAwIC0zIC0zeiIgZmlsbD0iI2ZmZiIgLz4gPC9zdmc+">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -238,6 +239,11 @@
         const Mic = (p) => <IconBase {...p} d={<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />} />;
         const Grid = (p) => <IconBase {...p} d={<><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></>} />;
         const Volume2 = (p) => <IconBase {...p} d={<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />} />;
+        // Added Battery/Wifi icons for realistic status bar
+        const Battery = (p) => <IconBase {...p} d={<><rect x="1" y="6" width="18" height="12" rx="2" ry="2" /><line x1="23" y1="13" x2="23" y2="11" /></>} />;
+        const Wifi = (p) => <IconBase {...p} d={<path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />} />;
+        const MessageCircle = (p) => <IconBase {...p} d={<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />} />;
+        const Clock = (p) => <IconBase {...p} d={<><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></>} />;
 
         /* --- CONFIGURATION --- */
         const API_BASE_URL = 'https://lotte-choco.onrender.com/';
@@ -279,14 +285,45 @@
         function FakeCallOverlay({ onClose }) {
             const [status, setStatus] = useState('ringing'); // 'ringing' | 'connected'
             const [timer, setTimer] = useState(0);
+            const [speakerOn, setSpeakerOn] = useState(false);
+            const [currentTime, setCurrentTime] = useState('');
             const ringtoneRef = useRef(new Audio(RINGTONE_URL));
             const voiceRef = useRef(new Audio(MOMS_VOICE_URL));
 
             useEffect(() => {
+                // Update time for status bar
+                const updateTime = () => {
+                    const now = new Date();
+                    setCurrentTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+                };
+                updateTime();
+                const timeInterval = setInterval(updateTime, 60000);
+
+                // Play Audio
                 ringtoneRef.current.loop = true;
                 ringtoneRef.current.play().catch(e => console.log("Audio play failed:", e));
-                return () => { ringtoneRef.current.pause(); voiceRef.current.pause(); };
-            }, []);
+
+                // Haptic Feedback (Vibration)
+                if (navigator.vibrate) {
+                    // Pattern: Vibrate 500ms, pause 1000ms, repeat
+                    const vibrateInterval = setInterval(() => {
+                        if (status === 'ringing') navigator.vibrate([500, 1000, 500]);
+                    }, 2000);
+                    return () => { 
+                        clearInterval(timeInterval);
+                        clearInterval(vibrateInterval);
+                        ringtoneRef.current.pause(); 
+                        voiceRef.current.pause(); 
+                        navigator.vibrate(0); // Stop vibration
+                    };
+                }
+                
+                return () => { 
+                    clearInterval(timeInterval);
+                    ringtoneRef.current.pause(); 
+                    voiceRef.current.pause(); 
+                };
+            }, [status]);
 
             useEffect(() => {
                 let interval;
@@ -303,55 +340,98 @@
             const acceptCall = () => {
                 ringtoneRef.current.pause();
                 voiceRef.current.play().catch(e => console.log("Voice play failed:", e));
+                if (navigator.vibrate) navigator.vibrate(0);
                 setStatus('connected');
             };
 
             const endCall = () => {
                 ringtoneRef.current.pause();
                 voiceRef.current.pause();
+                if (navigator.vibrate) navigator.vibrate(0);
                 onClose();
             };
 
+            const toggleSpeaker = () => {
+                setSpeakerOn(!speakerOn);
+                // In a real app, this would route audio. Here we just toggle UI.
+                voiceRef.current.volume = !speakerOn ? 1.0 : 0.4;
+            };
+
             return (
-                <div className="fixed inset-0 z-[100] bg-[#110524] flex flex-col items-center pt-24 pb-12 animate-in slide-in-from-bottom duration-300">
-                    <div className="absolute inset-0 bg-gradient-to-b from-fuchsia-900/20 to-transparent pointer-events-none"></div>
-                    <div className="flex-1 flex flex-col items-center justify-start w-full px-8 relative z-10">
-                        <div className="w-32 h-32 bg-gray-800 rounded-full flex items-center justify-center mb-8 border-4 border-gray-700/50 shadow-2xl relative">
-                             <User className="w-16 h-16 text-gray-400" />
+                <div className="fixed inset-0 z-[100] bg-[#0f172a] flex flex-col items-center animate-in slide-in-from-bottom duration-300 font-sans">
+                    {/* Fake Status Bar */}
+                    <div className="w-full flex justify-between items-center px-6 py-2 text-white/80 text-xs font-medium bg-transparent absolute top-0 z-20">
+                        <span>{currentTime}</span>
+                        <div className="flex gap-1.5 items-center">
+                            <Wifi className="w-3.5 h-3.5" />
+                            <Battery className="w-3.5 h-3.5" />
                         </div>
-                        <h2 className="text-4xl font-light text-white mb-3 tracking-wide">Mom</h2>
-                        <p className="text-fuchsia-200/70 text-lg tracking-widest uppercase font-medium">{status === 'ringing' ? 'Incoming Call...' : formatTime(timer)}</p>
+                    </div>
+
+                    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 via-slate-900/0 to-slate-900/80 pointer-events-none"></div>
+                    
+                    {/* Call Info */}
+                    <div className="flex-1 flex flex-col items-center pt-32 w-full px-8 relative z-10">
+                        <div className="w-28 h-28 bg-gradient-to-br from-gray-700 to-gray-800 rounded-full flex items-center justify-center mb-6 border-4 border-white/5 shadow-2xl relative">
+                             <User className="w-14 h-14 text-gray-400" />
+                        </div>
+                        <h2 className="text-3xl font-normal text-white mb-2 tracking-wide">Mom</h2>
+                        <p className="text-white/60 text-lg tracking-wide font-normal">
+                            {status === 'ringing' ? 'Mobile...' : formatTime(timer)}
+                        </p>
                     </div>
 
                     {status === 'ringing' ? (
-                        <div className="w-full max-w-sm px-8 pb-12 flex justify-between items-center relative z-10">
-                            {/* UPDATED: Decline button now uses the standard "Hang Up" icon (Rotated Phone) */}
-                            <button onClick={endCall} className="flex flex-col items-center gap-3 group">
-                                <div className="w-20 h-20 rounded-full bg-red-500/90 backdrop-blur flex items-center justify-center shadow-[0_8px_32px_rgba(239,68,68,0.4)] transition-transform active:scale-90 hover:scale-105">
-                                    <Phone className="w-8 h-8 text-white fill-current rotate-[135deg]" />
-                                </div>
-                                <span className="text-white font-medium text-sm tracking-wide opacity-80">Decline</span>
-                            </button>
-                            
-                            <button onClick={acceptCall} className="flex flex-col items-center gap-3 group">
-                                <div className="w-20 h-20 rounded-full bg-emerald-500/90 backdrop-blur flex items-center justify-center shadow-[0_8px_32px_rgba(16,185,129,0.4)] transition-transform active:scale-90 animate-bounce">
-                                    <Phone className="w-8 h-8 text-white fill-current" />
-                                </div>
-                                <span className="text-white font-medium text-sm tracking-wide opacity-80">Accept</span>
-                            </button>
+                        <div className="w-full relative z-10 pb-16">
+                            {/* Call Options (Remind/Message) */}
+                            <div className="flex justify-around px-12 mb-16 text-white/70">
+                                <button className="flex flex-col items-center gap-2 active:opacity-50 transition-opacity">
+                                    <Clock className="w-6 h-6" />
+                                    <span className="text-xs font-medium">Remind Me</span>
+                                </button>
+                                <button className="flex flex-col items-center gap-2 active:opacity-50 transition-opacity">
+                                    <MessageCircle className="w-6 h-6" />
+                                    <span className="text-xs font-medium">Message</span>
+                                </button>
+                            </div>
+
+                            <div className="w-full max-w-sm px-10 flex justify-between items-center mx-auto">
+                                {/* Decline */}
+                                <button onClick={endCall} className="flex flex-col items-center gap-3 group">
+                                    <div className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-[0_4px_20px_rgba(239,68,68,0.5)] transition-transform active:scale-90 active:bg-red-600">
+                                        <Phone className="w-8 h-8 text-white fill-current rotate-[135deg]" />
+                                    </div>
+                                    <span className="text-white font-medium text-sm tracking-wide opacity-90">Decline</span>
+                                </button>
+                                
+                                {/* Accept */}
+                                <button onClick={acceptCall} className="flex flex-col items-center gap-3 group">
+                                    <div className="w-16 h-16 rounded-full bg-emerald-500 flex items-center justify-center shadow-[0_4px_20px_rgba(16,185,129,0.5)] transition-transform active:scale-90 animate-bounce active:bg-emerald-600">
+                                        <Phone className="w-8 h-8 text-white fill-current" />
+                                    </div>
+                                    <span className="text-white font-medium text-sm tracking-wide opacity-90">Accept</span>
+                                </button>
+                            </div>
                         </div>
                     ) : (
-                        <div className="w-full max-w-sm px-8 space-y-16 relative z-10">
-                            <div className="grid grid-cols-3 gap-8">
-                                <div className="flex flex-col items-center gap-3 opacity-60"><div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/5"><Mic className="w-6 h-6"/></div><span className="text-xs font-medium">Mute</span></div>
-                                <div className="flex flex-col items-center gap-3 opacity-60"><div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/5"><Grid className="w-6 h-6"/></div><span className="text-xs font-medium">Keypad</span></div>
-                                <div className="flex flex-col items-center gap-3"><div className="w-16 h-16 rounded-full bg-white text-black flex items-center justify-center shadow-lg hover:scale-105 transition-transform"><Volume2 className="w-6 h-6"/></div><span className="text-xs font-medium text-white">Speaker</span></div>
+                        <div className="w-full max-w-sm px-8 space-y-16 relative z-10 pb-20">
+                            <div className="grid grid-cols-3 gap-y-8 gap-x-4">
+                                <div className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center"><Mic className="w-7 h-7 text-white"/></div><span className="text-xs font-medium text-white">Mute</span></div>
+                                <div className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center"><Grid className="w-7 h-7 text-white"/></div><span className="text-xs font-medium text-white">Keypad</span></div>
+                                <div className="flex flex-col items-center gap-3 opacity-100">
+                                    <button onClick={toggleSpeaker} className={`w-16 h-16 rounded-full border flex items-center justify-center transition-all ${speakerOn ? 'bg-white text-black border-white' : 'border-white/10 bg-white/5 text-white'}`}>
+                                        <Volume2 className="w-7 h-7"/>
+                                    </button>
+                                    <span className="text-xs font-medium text-white">Speaker</span>
+                                </div>
+                                <div className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center"><Plus className="w-7 h-7 text-white"/></div><span className="text-xs font-medium text-white">Add Call</span></div>
+                                <div className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center"><MessageCircle className="w-7 h-7 text-white"/></div><span className="text-xs font-medium text-white">FaceTime</span></div>
+                                <div className="flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity"><div className="w-16 h-16 rounded-full border border-white/10 bg-white/5 flex items-center justify-center"><User className="w-7 h-7 text-white"/></div><span className="text-xs font-medium text-white">Contacts</span></div>
                             </div>
                             
-                            <div className="flex justify-center">
-                                {/* UPDATED: End Call button also uses standard "Hang Up" icon */}
-                                <button onClick={endCall} className="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center shadow-[0_8px_40px_rgba(239,68,68,0.5)] hover:bg-red-600 transition-all hover:scale-110">
-                                    <Phone className="w-9 h-9 text-white fill-current rotate-[135deg]" />
+                            <div className="flex justify-center mt-8">
+                                <button onClick={endCall} className="w-16 h-16 rounded-full bg-red-500 flex items-center justify-center shadow-[0_8px_40px_rgba(239,68,68,0.5)] hover:bg-red-600 transition-all active:scale-95">
+                                    <Phone className="w-8 h-8 text-white fill-current rotate-[135deg]" />
                                 </button>
                             </div>
                         </div>
@@ -774,97 +854,14 @@
             const [contacts, setContacts] = useState([]);
             const [showAddForm, setShowAddForm] = useState(false);
             useEffect(() => { loadContacts(); }, []);
-            
-            const loadContacts = async () => { 
-                try { 
-                    const data = await apiCall('/contacts'); 
-                    if (Array.isArray(data)) setContacts(data || []); 
-                } catch (err) { console.error(err); } 
-            };
-            
-            const addContact = async (e) => { 
-                e.preventDefault(); 
-                const formData = new FormData(e.target);
-                const newContactData = Object.fromEntries(formData);
-                
-                try { 
-                    // Call API to save
-                    const res = await apiCall('/contacts', 'POST', newContactData); 
-                    
-                    // Manually update local state immediately (Fixes "not saving" issue)
-                    const newContact = {
-                        ...newContactData,
-                        contact_id: res.contact_id || Date.now() // Use returned ID or generate one
-                    };
-                    
-                    setContacts(prev => [...prev, newContact]);
-                    showToast("Contact added to Tribe"); 
-                    setShowAddForm(false); 
-                    
-                    // Note: We skip loadContacts() here to prevent Demo Mode data reset
-                } catch (err) { 
-                    showToast("Failed to add contact", "error"); 
-                } 
-            };
-            
-            const deleteContact = async (id) => { 
-                try { 
-                    await apiCall(`/contacts/${id}`, 'DELETE'); 
-                    setContacts(prev => prev.filter(c => c.contact_id !== id)); 
-                    showToast("Contact removed"); 
-                } catch (err) { 
-                    showToast("Failed to delete", "error"); 
-                } 
-            };
-            
+            const loadContacts = async () => { try { const data = await apiCall('/contacts'); setContacts(data || []); } catch (err) { console.error(err); } };
+            const addContact = async (e) => { e.preventDefault(); const formData = new FormData(e.target); try { await apiCall('/contacts', 'POST', Object.fromEntries(formData)); showToast("Contact added"); setShowAddForm(false); loadContacts(); } catch (err) { showToast("Failed to add contact", "error"); } };
+            const deleteContact = async (id) => { try { await apiCall(`/contacts/${id}`, 'DELETE'); setContacts(prev => prev.filter(c => c.contact_id !== id)); showToast("Contact removed"); } catch (err) { showToast("Failed to delete", "error"); } };
             return (
                 <div className="space-y-6 animate-in slide-in-from-right duration-300">
-                    <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold text-white tracking-tight">My Tribe</h2>
-                        <button onClick={() => setShowAddForm(!showAddForm)} className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white shadow-lg p-3 rounded-xl hover:scale-105 transition-transform">
-                            {showAddForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
-                        </button>
-                    </div>
-                    
-                    {showAddForm && (
-                        <div className="glass-panel p-6 animate-in slide-in-from-top-4 mb-6 rounded-[2rem] border-fuchsia-500/30">
-                            <h3 className="font-bold mb-6 text-white text-lg">Add Trusted Contact</h3>
-                            <form onSubmit={addContact}>
-                                <Input name="contact_name" label="Name" placeholder="Mom" required />
-                                <Input name="contact_phone" label="Phone Number" placeholder="+91..." required />
-                                <Input name="relationship_type" label="Relationship" placeholder="Parent/Sibling/Friend" required />
-                                <Button type="submit" className="w-full py-4 mt-2">Save to Tribe</Button>
-                            </form>
-                        </div>
-                    )}
-                    
-                    <div className="space-y-4">
-                        {contacts.length === 0 ? (
-                            <div className="text-center py-16 text-gray-500 glass-panel rounded-[2rem]">
-                                <User className="w-16 h-16 mx-auto mb-4 opacity-20" />
-                                <p className="font-medium">No contacts yet.</p>
-                            </div>
-                        ) : (
-                            contacts.map((contact) => (
-                                <div key={contact.contact_id} className="glass-panel p-5 flex justify-between items-center rounded-[1.5rem] border border-white/5 hover:border-fuchsia-500/30 transition-colors">
-                                    <div className="flex items-center gap-5">
-                                        <div className="bg-gradient-to-br from-fuchsia-500 to-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg text-lg">
-                                            {contact.contact_name ? contact.contact_name[0] : '?'}
-                                        </div>
-                                        <div>
-                                            <h4 className="font-bold text-white text-lg leading-tight">{contact.contact_name}</h4>
-                                            <p className="text-xs text-fuchsia-200/60 font-medium mt-1 uppercase tracking-wide">
-                                                {contact.relationship_type} • {contact.contact_phone}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <button onClick={() => deleteContact(contact.contact_id)} className="text-gray-500 hover:text-red-400 p-3 rounded-xl hover:bg-red-500/10 transition-all">
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            ))
-                        )}
-                    </div>
+                    <div className="flex justify-between items-center mb-6"><h2 className="text-2xl font-bold text-white tracking-tight">My Tribe</h2><button onClick={() => setShowAddForm(!showAddForm)} className="bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white shadow-lg p-3 rounded-xl hover:scale-105 transition-transform">{showAddForm ? <X className="w-5 h-5" /> : <Plus className="w-5 h-5" />}</button></div>
+                    {showAddForm && <div className="glass-panel p-6 animate-in slide-in-from-top-4 mb-6 rounded-[2rem] border-fuchsia-500/30"><h3 className="font-bold mb-6 text-white text-lg">Add Trusted Contact</h3><form onSubmit={addContact}><Input name="contact_name" label="Name" placeholder="Mom" required /><Input name="contact_phone" label="Phone Number" placeholder="+91..." required /><Input name="relationship_type" label="Relationship" placeholder="Parent/Sibling/Friend" required /><Button type="submit" className="w-full py-4 mt-2">Save to Tribe</Button></form></div>}
+                    <div className="space-y-4">{contacts.length === 0 ? <div className="text-center py-16 text-gray-500 glass-panel rounded-[2rem]"><User className="w-16 h-16 mx-auto mb-4 opacity-20" /><p className="font-medium">No contacts yet.</p></div> : contacts.map((contact) => (<div key={contact.contact_id} className="glass-panel p-5 flex justify-between items-center rounded-[1.5rem] border border-white/5 hover:border-fuchsia-500/30 transition-colors"><div className="flex items-center gap-5"><div className="bg-gradient-to-br from-fuchsia-500 to-purple-600 w-12 h-12 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg text-lg">{contact.contact_name[0]}</div><div><h4 className="font-bold text-white text-lg leading-tight">{contact.contact_name}</h4><p className="text-xs text-fuchsia-200/60 font-medium mt-1 uppercase tracking-wide">{contact.relationship_type}</p></div></div><button onClick={() => deleteContact(contact.contact_id)} className="text-gray-500 hover:text-red-400 p-3 rounded-xl hover:bg-red-500/10 transition-all"><Trash2 className="w-5 h-5" /></button></div>))}</div>
                 </div>
             );
         }
