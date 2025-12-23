@@ -325,10 +325,10 @@
 
                     {status === 'ringing' ? (
                         <div className="w-full max-w-sm px-8 pb-12 flex justify-between items-center relative z-10">
-                            {/* UPDATED: Decline button is now stable (removed animate-float) */}
+                            {/* UPDATED: Decline button now uses the standard "Hang Up" icon (Rotated Phone) */}
                             <button onClick={endCall} className="flex flex-col items-center gap-3 group">
                                 <div className="w-20 h-20 rounded-full bg-red-500/90 backdrop-blur flex items-center justify-center shadow-[0_8px_32px_rgba(239,68,68,0.4)] transition-transform active:scale-90 hover:scale-105">
-                                    <PhoneOff className="w-8 h-8 text-white fill-current" />
+                                    <Phone className="w-8 h-8 text-white fill-current rotate-[135deg]" />
                                 </div>
                                 <span className="text-white font-medium text-sm tracking-wide opacity-80">Decline</span>
                             </button>
@@ -349,8 +349,9 @@
                             </div>
                             
                             <div className="flex justify-center">
+                                {/* UPDATED: End Call button also uses standard "Hang Up" icon */}
                                 <button onClick={endCall} className="w-20 h-20 rounded-full bg-red-500 flex items-center justify-center shadow-[0_8px_40px_rgba(239,68,68,0.5)] hover:bg-red-600 transition-all hover:scale-110">
-                                    <PhoneOff className="w-9 h-9 text-white fill-current" />
+                                    <Phone className="w-9 h-9 text-white fill-current rotate-[135deg]" />
                                 </button>
                             </div>
                         </div>
