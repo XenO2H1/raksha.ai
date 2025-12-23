@@ -154,7 +154,7 @@
     <script type="text/babel">
         const { useState, useEffect, useRef, useMemo } = React;
 
-        /* --- AUDIO ENGINE (Unchanged) --- */
+        /* --- AUDIO ENGINE --- */
         class SirenManager {
             constructor() { 
                 this.audioCtx = null; 
@@ -170,19 +170,21 @@
                     if (!this.audioCtx) this.audioCtx = new AudioContext();
                     if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
                     
+                    // Main Tone Oscillator
                     this.oscillator = this.audioCtx.createOscillator();
-                    this.oscillator.type = 'sawtooth';
-                    this.oscillator.frequency.value = 800; 
+                    this.oscillator.type = 'sawtooth'; // Sawtooth gives it that "buzzy" siren texture
+                    this.oscillator.frequency.value = 900; // Higher center frequency
                     
                     this.gainNode = this.audioCtx.createGain();
-                    this.gainNode.gain.value = 0.5;
+                    this.gainNode.gain.value = 0.3; // Volume control
                     
+                    // Modulation (LFO) for the "Yelp" effect
                     this.lfo = this.audioCtx.createOscillator();
-                    this.lfo.type = 'sine';
-                    this.lfo.frequency.value = 2; 
+                    this.lfo.type = 'triangle'; // Triangle wave for smooth up/down sweep
+                    this.lfo.frequency.value = 3.5; // 3.5Hz = Fast "Indian Police" Yelp speed
                     
                     this.lfoGain = this.audioCtx.createGain();
-                    this.lfoGain.gain.value = 400; 
+                    this.lfoGain.gain.value = 600; // Wide sweep range (approx 300Hz to 1500Hz)
                     
                     this.lfo.connect(this.lfoGain);
                     this.lfoGain.connect(this.oscillator.frequency);
